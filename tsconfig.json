@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "commonjs",
+    "declaration": true,
+    "strict": true,
+    "outDir": "dist",
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules",
+    "cdk.out"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ]
+}
