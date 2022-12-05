@@ -1,7 +1,7 @@
-import { Logger } from './logger';
+import { Logger } from '../logger';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 
-export class HelloWorldHandler {
+export class CreateUrlHandler {
 
     constructor(private readonly logger: Logger) {
     }

@@ -3,11 +3,10 @@ import { Integration, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigate
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { Topic } from 'aws-cdk-lib/aws-sns';
 import {Construct} from 'constructs';
-import { helloWorldHandlerName, hellowWorldPath } from './container';
+import { urlPostHandlerName, urlPostPath } from './container';
 
-export class HelloWorldServiceStack extends Stack {
+export class UrlServiceStack extends Stack {
     constructor(
         scope: Construct,
         id: string,
@@ -15,31 +14,26 @@ export class HelloWorldServiceStack extends Stack {
     ) {
         super(scope, id, props);
         this.createTable();
-        this.createTopic();
         this.createApi();
     }
 
     private createTable() {
-        new Table(this, 'HelloworldTable', {
+        new Table(this, 'UrlTable', {
             partitionKey: {
                 name: 'id',
                 type: AttributeType.STRING
             },
-            tableName: 'HelloWorldTable',
+            tableName: 'UrlTable',
         });    
     }
 
-    private createTopic() { 
-        new Topic(this, 'HelloWorldTopic'); 
-    }
-
     private createApi() {
-       const serverlessRestApi = new ServerlessRestApi(this, 'HelloWorldApi');
-       serverlessRestApi.addEndpoint('GetHelloWorld', {
-            method: 'GET',
-            path: 'hello-world',
-            entry: hellowWorldPath,
-            handler: helloWorldHandlerName,
+       const serverlessRestApi = new ServerlessRestApi(this, 'UrlApi');
+       serverlessRestApi.addEndpoint('CreateUrl', {
+            method: 'POST',
+            path: '',
+            entry: urlPostPath,
+            handler: urlPostHandlerName,
        });
     }
 

@@ -1,9 +1,9 @@
-import { HelloWorldHandler } from "./hello-world-handler";
+import { CreateUrlHandler } from "./create-url-handler-handler";
 
 const logger = {log: jest.fn()};
 
 test('Logs hello world', async () => {
-    const handler = new HelloWorldHandler(logger);
+    const handler = new CreateUrlHandler(logger);
 
     await handler.invoke();
     
@@ -11,7 +11,7 @@ test('Logs hello world', async () => {
 });
 
 test('returns 200 Hello World', async () => {
-    const handler = new HelloWorldHandler(logger);
+    const handler = new CreateUrlHandler(logger);
 
     const response = await handler.invoke();
     

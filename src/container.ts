@@ -1,8 +1,8 @@
-import { HelloWorldHandler } from "./hello-world-handler";
+import { CreateUrlHandler } from "./create-url/create-url-handler-handler";
 import { ConsoleLogger } from "./logger";
 
 const logger = new ConsoleLogger();
 
-export const helloWorldHandler = new HelloWorldHandler(logger).invoke;
-export const hellowWorldPath = __filename;
-export const helloWorldHandlerName = 'helloWorldHandler';
+export const urlPostHandler = new CreateUrlHandler(logger).invoke;
+export const urlPostPath = __filename;
+export const urlPostHandlerName = 'urlPostHandler';

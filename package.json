@@ -1,5 +1,5 @@
 {
-  "name": "cdk-template",
+  "name": "url-service",
   "version": "0.1.0",
   "scripts": {
     "build": "tsc",
