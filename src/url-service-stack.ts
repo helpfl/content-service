@@ -28,72 +28,17 @@ export class UrlServiceStack extends Stack {
     }
 
     private createApi() {
-       const serverlessRestApi = new ServerlessRestApi(this, 'UrlApi');
-       serverlessRestApi.addEndpoint('CreateUrl', {
-            method: 'POST',
-            path: '',
+        const api = new RestApi(this, 'UrlApi');
+        const createUrlFunction = new NodejsFunction(this, 'CreateUrlFunction', {
             entry: urlPostPath,
             handler: urlPostHandlerName,
-       });
-    }
-
-}
-
-export type RestEndpointConfiguration = Readonly<{
-    entry: string;
-    handler: string;
-    path: string;
-    method: string;
-}>;
-
-class ServerlessRestApi {
-
-    private readonly api = new RestApi(this.scope, this.id, {
-        cloudWatchRole: true
-    });
-
-    private readonly lambdaFactory = new NodeJsLambdaFactory(this.scope);
-
-    constructor(private readonly scope: Construct, private readonly id: string) {
-    }
-
-    addEndpoint(id: string, {entry, handler, path, method}: RestEndpointConfiguration) {
-        const lambda = this.createLambda(id, entry, handler);
-        const lambdaIntegration = this.createIntegration(lambda);
-        this.createResource(path, method, lambdaIntegration);
-    }
-
-    private createIntegration(lambda: NodejsFunction): LambdaIntegration {
-        return new LambdaIntegration(lambda);
-    }
-
-    private createLambda(id: string, entry: string, handler: string): NodejsFunction {
-        return this.lambdaFactory.createLambda(id, entry, handler);
-    }
-
-    private createResource(path: string, method: string, integration: Integration): void {
-        this.api.root.addResource(path).addMethod(method, integration);
-    }
-}
-
-
-export interface LambdaProps {
-    readonly entry: string, 
-    readonly handler: string
-}
-class NodeJsLambdaFactory {
-
-    constructor(private readonly scope: Construct) {
-    }
-
-    createLambda(id: string, entry: string, handler: string): NodejsFunction {
-        return new NodejsFunction(this.scope, id, {
-            entry,
-            handler,
             runtime: Runtime.NODEJS_16_X,
             environment: {
                 NODE_OPTIONS: '--enable-source-maps',
               },
         });
+        const integration = new LambdaIntegration(createUrlFunction);
+        api.root.addMethod('POST', integration);
     }
+
 }
