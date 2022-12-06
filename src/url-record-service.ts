@@ -5,6 +5,7 @@ import {DynamoDB} from 'aws-sdk';
 export type UrlRecordServiceInterface = {
     create(payload: UrlRecordPayload): Promise<UrlRecord>;
     getById(id: string): Promise<UrlRecord>;
+    getByUrl(url: string): Promise<UrlRecord>;
 }
 
 export class UrlRecordService implements UrlRecordServiceInterface {
