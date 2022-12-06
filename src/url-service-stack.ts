@@ -4,7 +4,7 @@ import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Construct} from 'constructs';
-import { urlPostHandlerName, urlPostPath } from './container';
+import { urlGetHandlerName, urlGetHandlerPath, urlPostHandlerName, urlPostPath } from './container';
 
 export class UrlServiceStack extends Stack {
 
@@ -27,8 +27,8 @@ export class UrlServiceStack extends Stack {
         const createRecrodIntegration = new LambdaIntegration(createUrlFunction);
         
         const getRecordFunction = new NodejsFunction(this, 'GetRecordFunction', {
-             entry: urlPostPath,
-            handler: urlPostHandlerName,
+             entry: urlGetHandlerPath,
+            handler: urlGetHandlerName,
             runtime: Runtime.NODEJS_16_X,
             environment: {
                 NODE_OPTIONS: '--enable-source-maps',
