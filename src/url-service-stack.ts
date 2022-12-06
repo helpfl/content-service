@@ -4,7 +4,7 @@ import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Construct} from 'constructs';
-import { urlGetHandlerName, urlGetHandlerPath, urlPostHandlerName, urlPostPath } from './container';
+import { urlGetHandlerName, urlGetHandlerPath, urlPostHandlerName, urlPostPath, urlResolverHandlerName, urlResolverHandlerPath } from './container';
 
 export class UrlServiceStack extends Stack {
 
@@ -23,9 +23,7 @@ export class UrlServiceStack extends Stack {
                 NODE_OPTIONS: '--enable-source-maps',
             }
         });
-
         const createRecrodIntegration = new LambdaIntegration(createUrlFunction);
-        
         const getRecordFunction = new NodejsFunction(this, 'GetRecordFunction', {
              entry: urlGetHandlerPath,
             handler: urlGetHandlerName,
@@ -34,11 +32,8 @@ export class UrlServiceStack extends Stack {
                 NODE_OPTIONS: '--enable-source-maps',
             }
         });
-        
         const getRecordIntegration = new LambdaIntegration(getRecordFunction);
-
         const urlApi = new RestApi(this, 'UrlApi', {});
-
         urlApi.root.addMethod('POST', createRecrodIntegration, {
             requestValidator: new RequestValidator(
                 this,
@@ -70,6 +65,18 @@ export class UrlServiceStack extends Stack {
         });
 
         urlApi.root.addResource('{id}').addMethod('GET', getRecordIntegration);
+
+        const urlResolverFunction = new NodejsFunction(this, 'UrlResolverFunction', {
+            entry: urlResolverHandlerPath,
+            handler: urlResolverHandlerName,
+            runtime: Runtime.NODEJS_16_X,
+            environment: {
+                NODE_OPTIONS: '--enable-source-maps',
+            }
+        });
+        const urlResolverIntegration = new LambdaIntegration(urlResolverFunction);
+        const linkApi = new RestApi(this, 'LinkApi');
+        linkApi.root.addResource('{id}').addMethod('GET', urlResolverIntegration);
 
         const urlTable = new Table(this, 'UrlTable', {
             partitionKey: {

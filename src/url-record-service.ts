@@ -51,7 +51,7 @@ export class UrlRecordService implements UrlRecordServiceInterface {
         const [urlRecord] = result.Items;
         return DynamoDB.Converter.unmarshall(urlRecord) as UrlRecord;
         
-    }
+    } 
 
     private randomUrlPath(): string {
         return Math.random().toString(32).substring(2, 5) + Math.random().toString(32).substring(2, 5);
