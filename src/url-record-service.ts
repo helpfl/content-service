@@ -41,7 +41,11 @@ export class UrlRecordService implements UrlRecordServiceInterface {
         const result = await this.dynamo.query({
             TableName: 'UrlTable',
             IndexName: 'urlIndex',
-            KeyConditionExpression: 'url = :url',
+            KeyConditionExpression: '#url = :url',
+            ExpressionAttributeNames: {
+                '#url': 'url'
+            },
+            ExpressionAttributeValues: DynamoDB.Converter.marshall({':url': url})
         }).promise();
         if (!result.Items) {
             throw new NotFoundError(`Item was not found: ${url}`);
