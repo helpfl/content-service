@@ -12,7 +12,6 @@ export class UrlRecordService implements UrlRecordServiceInterface {
     constructor(
         private readonly dynamo: DynamoDB,
         private readonly uuid: () => string) {
-
     }
 
     async create(payload: UrlRecordPayload): Promise<UrlRecord> {
@@ -31,10 +30,27 @@ export class UrlRecordService implements UrlRecordServiceInterface {
             TableName: 'UrlTable',
             Key: DynamoDB.Converter.marshall({id})
         }).promise();
-        if (result.Item) {
-            return DynamoDB.Converter.unmarshall(result.Item) as UrlRecord;
+        if (!result.Item) {
+            throw new NotFoundError(`Item was not found: ${id}`);
         }
-        throw new NotFoundError(`Item was not found: ${id}`);
+        return DynamoDB.Converter.unmarshall(result.Item) as UrlRecord;
+    }
+
+    async getByUrl(url: string): Promise<UrlRecord> {
+        const result = await this.dynamo.query({
+            TableName: 'UrlTable',
+            IndexName: 'urlIndex',
+            KeyConditionExpression: 'url = :url',
+        }).promise();
+        if (!result.Items) {
+            throw new NotFoundError(`Item was not found: ${url}`);
+        }
+        if (result.Items.length > 1) {
+            throw new InternalServerError(`Multiple items found: ${url}`);
+        }
+        const [urlRecord] = result.Items;
+        return DynamoDB.Converter.unmarshall(urlRecord) as UrlRecord;
+        
     }
 
     private randomUrlPath(): string {
@@ -55,5 +71,12 @@ export class NotFoundError extends Error {
     constructor(message: string) {
         super(message);
         this.name = 'NotFoundError';
+    }
+}
+
+export class InternalServerError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'InternalServerError';
     }
 }
