@@ -18,7 +18,7 @@ export class UrlRecordService implements UrlRecordServiceInterface {
     async create(payload: UrlRecordPayload): Promise<UrlRecord> {
         const record: UrlRecord = {
             ...payload,
-            createdAt: DateTime.utc(),
+            createdAt: DateTime.utc().toISO(),
             id: this.uuid(),
             url: `https://link.helpfl.click/${(this.randomUrlPath())}`
         };
