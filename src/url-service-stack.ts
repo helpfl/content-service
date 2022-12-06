@@ -89,6 +89,7 @@ export class UrlServiceStack extends Stack {
 
         urlTable.grantWriteData(createUrlFunction);
         urlTable.grantReadData(getRecordFunction);
+        urlTable.grantReadData(urlResolverFunction);
 
         urlTable.addGlobalSecondaryIndex({
             indexName: 'urlIndex',
