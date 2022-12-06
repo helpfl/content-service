@@ -54,11 +54,11 @@ export class UrlServiceStack extends Stack {
                 }
               ),
               requestModels: {
-                'application/json': new Model(this, 'model-validator', {
+                'application/json': new Model(this, 'UrlRecordPayload', { // TODO: Make this align with the real type
                     restApi: urlApi,
                     contentType: 'application/json',
                     description: 'To validate the request body',
-                    modelName: 'Url Record',
+                    modelName: 'UrlRecordPayload',
                     schema: {
                         type: JsonSchemaType.OBJECT,
                         required: ['redirectUrl'],
