@@ -17,6 +17,6 @@ export const urlGetHandler = new GetRecordHanlder(service).invoke;
 export const urlGetHandlerPath = __filename;
 export const urlGetHandlerName = 'urlGetHandler';
 
-export const urlResolverHandler = new UrlResolver().invoke;
+export const urlResolverHandler = new UrlResolver(service).invoke;
 export const urlResolverHandlerPath = __filename;
 export const urlResolverHandlerName = 'urlResolverHandler';
