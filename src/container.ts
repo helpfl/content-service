@@ -5,9 +5,10 @@ import {DynamoDB} from 'aws-sdk';
 import { v4 } from 'uuid';
 import { GetRecordHanlder } from "./get-record-handler";
 import { UrlResolver } from "./url-resolver";
+import { toDataURL } from "qrcode";
 
 const logger = new ConsoleLogger();
-const service = new UrlRecordService(new DynamoDB(), v4);
+const service = new UrlRecordService(new DynamoDB(), v4, toDataURL);
 
 export const urlPostHandler = new CreateUrlHandler(logger, service).invoke;
 export const urlPostPath = __filename;

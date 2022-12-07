@@ -13,12 +13,12 @@ export class UrlRecordService implements UrlRecordServiceInterface {
     constructor(
         private readonly dynamo: DynamoDB,
         private readonly uuid: () => string, 
-        private readonly createQrCodeUri: () => Promise<string>) {
+        private readonly createQrCodeUri: (value: string) => Promise<string>) {
     }
 
     async create(payload: UrlRecordPayload): Promise<UrlRecord> {
         const url = `https://link.helpfl.click/${(this.randomUrlPath())}`;
-        const qrCodeUri = await this.createQrCodeUri();
+        const qrCodeUri = await this.createQrCodeUri(url);
         const record: UrlRecord = {
             ...payload,
             createdAt: DateTime.utc().toISO(),
