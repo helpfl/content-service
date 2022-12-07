@@ -24,7 +24,7 @@ export class GetRecordHanlder {
                 body: JSON.stringify(record)
             };
         } catch (e: unknown) {
-            if  (e instanceof NotFoundError) {
+            if (e instanceof NotFoundError) {
                 return {
                     statusCode: 404,
                     headers: {'Content-Type': 'application/json'},

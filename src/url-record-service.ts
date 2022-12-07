@@ -12,15 +12,19 @@ export class UrlRecordService implements UrlRecordServiceInterface {
 
     constructor(
         private readonly dynamo: DynamoDB,
-        private readonly uuid: () => string) {
+        private readonly uuid: () => string, 
+        private readonly createQrCodeUri: () => Promise<string>) {
     }
 
     async create(payload: UrlRecordPayload): Promise<UrlRecord> {
+        const url = `https://link.helpfl.click/${(this.randomUrlPath())}`;
+        const qrCodeUri = await this.createQrCodeUri();
         const record: UrlRecord = {
             ...payload,
             createdAt: DateTime.utc().toISO(),
             id: this.uuid(),
-            url: `https://link.helpfl.click/${(this.randomUrlPath())}`
+            url,
+            qrCodeUri
         };
         await this.persist(record);
         return record;
@@ -43,7 +47,7 @@ export class UrlRecordService implements UrlRecordServiceInterface {
             IndexName: 'urlIndex',
             KeyConditionExpression: '#url = :url',
             ExpressionAttributeNames: {
-                '#url': 'url'
+                '#url': 'url',
             },
             ExpressionAttributeValues: DynamoDB.Converter.marshall({':url': url})
         }).promise();
