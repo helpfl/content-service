@@ -28,6 +28,6 @@ export const urlResolverHandlerName = 'urlResolverHandler';
 
 // Blog stuff
 const blogContentRepository = new BlogContentRepository(dynamoDb, v4);
-export const blogContentHandler = new BlogContentHandler(blogContentRepository);
+export const blogContentHandler = new BlogContentHandler(blogContentRepository).invoke;
 export const blogContentHandlerPath = __filename;
 export const blogContentHandlerName = 'blogContentHandler';
