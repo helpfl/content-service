@@ -112,7 +112,8 @@ export class UrlServiceStack extends Stack {
 
         const blogContentIntegration = new LambdaIntegration(getBlogContentFn);
 
-        urlApi.root.addResource('blog').addMethod('GET', blogContentIntegration);
+        const blogApi = new RestApi(this, 'BlogApi');
+        blogApi.root.addMethod('GET', blogContentIntegration);
 
         const blogContentTable = new Table(this, 'BlogContentTable', {
             partitionKey: {
