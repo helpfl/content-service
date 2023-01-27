@@ -3,6 +3,7 @@ import { LambdaIntegration, RestApi, RequestValidator, Model, JsonSchemaType } f
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import {Construct} from 'constructs';
 import { blogContentHandlerName, blogContentHandlerPath, urlGetHandlerName, urlGetHandlerPath, urlPostHandlerName, urlPostPath, urlResolverHandlerName, urlResolverHandlerPath } from './container';
 
@@ -126,6 +127,8 @@ export class UrlServiceStack extends Stack {
         });
 
         blogContentTable.grantReadData(getBlogContentFn);
+
+        new Secret(this, 'ApiKeySecret', {});
     }
 
 }
