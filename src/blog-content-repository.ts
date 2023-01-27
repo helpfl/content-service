@@ -8,7 +8,7 @@ export class BlogContentRepository {
     public async fetchByDateRange(start: number, end: number): Promise<string[]> {
         const params: QueryInput = {
             TableName: 'BlogContent',
-            KeyConditionExpression: '#date > :start and #date < :end',
+            KeyConditionExpression: '#date BETWEEN :start AND :end',
             ExpressionAttributeValues: {
                 ':start': {
                     N: start.toString()
