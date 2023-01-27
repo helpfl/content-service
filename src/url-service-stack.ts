@@ -4,7 +4,7 @@ import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Construct} from 'constructs';
-import { urlGetHandlerName, urlGetHandlerPath, urlPostHandlerName, urlPostPath, urlResolverHandlerName, urlResolverHandlerPath } from './container';
+import { blogContentHandlerName, blogContentHandlerPath, urlGetHandlerName, urlGetHandlerPath, urlPostHandlerName, urlPostPath, urlResolverHandlerName, urlResolverHandlerPath } from './container';
 
 export class UrlServiceStack extends Stack {
 
@@ -99,6 +99,33 @@ export class UrlServiceStack extends Stack {
             }
         });
 
+
+        const getBlogContentFn = new NodejsFunction(this, 'BlogContentFn', {
+            entry: blogContentHandlerPath,
+            handler: blogContentHandlerName,
+            runtime: Runtime.NODEJS_16_X,
+            environment: {
+                NODE_OPTIONS: '--enable-source-maps',
+            }
+        });
+
+        const blogContentIntegration = new LambdaIntegration(getBlogContentFn);
+        const blogApi = new RestApi(this, 'BlogApi');
+        blogApi.root.addMethod('GET', blogContentIntegration);
+
+        const blogContentTable = new Table(this, 'BlogContentTable', {
+            partitionKey: {
+                name: 'id',
+                type: AttributeType.STRING
+            },
+            sortKey: {
+                name: 'date',
+                type: AttributeType.NUMBER
+            },
+            tableName: 'BlogContent',
+        });
+
+        blogContentTable.grantReadData(getBlogContentFn);
     }
 
 }
