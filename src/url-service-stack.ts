@@ -99,45 +99,6 @@ export class UrlServiceStack extends Stack {
                 type: AttributeType.STRING
             }
         });
-
-
-        const getBlogContentFn = new NodejsFunction(this, 'BlogContentFn', {
-            entry: blogContentHandlerPath,
-            handler: blogContentHandlerName,
-            runtime: Runtime.NODEJS_16_X,
-            environment: {
-                NODE_OPTIONS: '--enable-source-maps',
-            }
-        });
-
-        const blogContentIntegration = new LambdaIntegration(getBlogContentFn);
-
-        const blogApi = new RestApi(this, 'BlogApi');
-        blogApi.root.addMethod('GET', blogContentIntegration);
-
-        const blogContentTable = new Table(this, 'BlogContentTable', {
-            partitionKey: {
-                name: 'id',
-                type: AttributeType.STRING
-            },
-            sortKey: {
-                name: 'date',
-                type: AttributeType.NUMBER
-            },
-            tableName: 'BlogContent',
-        });
-
-        blogContentTable.addGlobalSecondaryIndex({
-            indexName: 'dateIndex',
-            partitionKey: {
-                name: 'date',
-                type: AttributeType.NUMBER
-            }
-        });
-
-        blogContentTable.grantReadData(getBlogContentFn);
-
-        new Secret(this, 'ApiKeySecret', {});
     }
 
 }
