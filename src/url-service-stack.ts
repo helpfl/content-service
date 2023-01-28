@@ -127,6 +127,14 @@ export class UrlServiceStack extends Stack {
             tableName: 'BlogContent',
         });
 
+        blogContentTable.addGlobalSecondaryIndex({
+            indexName: 'dateIndex',
+            partitionKey: {
+                name: 'date',
+                type: AttributeType.NUMBER
+            }
+        });
+
         blogContentTable.grantReadData(getBlogContentFn);
 
         new Secret(this, 'ApiKeySecret', {});
