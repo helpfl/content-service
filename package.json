@@ -21,7 +21,6 @@
     "typescript": "~4.9.3"
   },
   "dependencies": {
-    "@types/qrcode": "^1.5.0",
     "aws-cdk": "^2.53.0",
     "aws-cdk-lib": "2.40.0",
     "aws-sdk": "^2.1268.0",
