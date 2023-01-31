@@ -1,5 +1,5 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
-import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { Cors, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Table, AttributeType } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -30,7 +30,12 @@ export class BlogContentStack extends Stack {
 
         const blogContentIntegration = new LambdaIntegration(getBlogContentFn);
 
-        const blogApi = new RestApi(this, 'BlogApi');
+        const blogApi = new RestApi(this, 'BlogApi', {
+            defaultCorsPreflightOptions: {
+                allowOrigins: Cors.ALL_ORIGINS,
+                allowMethods: Cors.ALL_METHODS
+            }
+        });
         blogApi.root.addMethod('GET', blogContentIntegration);
 
         const blogContentTable = new Table(this, 'BlogContentTable', {
