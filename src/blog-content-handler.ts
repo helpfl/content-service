@@ -21,6 +21,8 @@ const jsonResponse = (status: number, body: Json): APIGatewayProxyStructuredResu
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Credentials': 'true'
     },
     body: JSON.stringify(body)
 });
