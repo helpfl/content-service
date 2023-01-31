@@ -38,16 +38,15 @@ export class BlogContentStack extends Stack {
                 name: 'id',
                 type: AttributeType.STRING
             },
-            sortKey: {
-                name: 'date',
-                type: AttributeType.NUMBER
-            },
             tableName: 'BlogContent',
         });
-
         blogContentTable.addGlobalSecondaryIndex({
-            indexName: 'dateIndex',
+            indexName: 'nameIndex',
             partitionKey: {
+                name: 'name',
+                type: AttributeType.STRING
+            },
+            sortKey: {
                 name: 'date',
                 type: AttributeType.NUMBER
             }
