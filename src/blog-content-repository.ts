@@ -9,13 +9,16 @@ export class BlogContentRepository {
         const params: QueryInput = {
             TableName: 'BlogContent',
             IndexName: 'nameIndex',
-            KeyConditionExpression: 'name = #name AND #date BETWEEN :start AND :end',
+            KeyConditionExpression: '#name = :name AND #date BETWEEN :start AND :end',
             ExpressionAttributeValues: {
                 ':start': {
                     N: start.toString()
                 },
                 ':end': {
                     N: end.toString()
+                },
+                ':name': {
+                    S: 'test'
                 }
             },
             ExpressionAttributeNames: {
