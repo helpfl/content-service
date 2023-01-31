@@ -23,7 +23,7 @@ export class BlogContentRepository {
             },
             ExpressionAttributeNames: {
                 '#date': 'date',
-                '#name': 'test'
+                '#name': 'name'
             }
         };
 
