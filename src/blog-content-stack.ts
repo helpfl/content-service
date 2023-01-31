@@ -28,25 +28,15 @@ export class BlogContentStack extends Stack {
             }
         });
 
-        const blogContentIntegration = new LambdaIntegration(getBlogContentFn, {
-            integrationResponses: [
-                {
-                    statusCode: '200',
-                    responseParameters: {
-                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                        "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
-                        "method.response.header.Access-Control-Allow-Origin": "'*'"
-                      }
-                }
-            ]
-        });
+        const blogContentIntegration = new LambdaIntegration(getBlogContentFn);
 
-        const blogApi = new RestApi(this, 'BlogApi', {});
-        blogApi.root.addMethod('GET', blogContentIntegration);
-        blogApi.root.addCorsPreflight({
-            allowOrigins: Cors.ALL_ORIGINS,
-            allowMethods: Cors.ALL_METHODS
+        const blogApi = new RestApi(this, 'BlogApi', {
+            defaultCorsPreflightOptions: {
+                allowOrigins: Cors.ALL_ORIGINS,
+                allowMethods: Cors.ALL_METHODS
+            }
         });
+        blogApi.root.addMethod('GET', blogContentIntegration);
 
         const blogContentTable = new Table(this, 'BlogContentTable', {
             partitionKey: {
