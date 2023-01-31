@@ -30,13 +30,12 @@ export class BlogContentStack extends Stack {
 
         const blogContentIntegration = new LambdaIntegration(getBlogContentFn);
 
-        const blogApi = new RestApi(this, 'BlogApi', {
-            defaultCorsPreflightOptions: {
-                allowOrigins: Cors.ALL_ORIGINS,
-                allowMethods: Cors.ALL_METHODS
-            }
-        });
+        const blogApi = new RestApi(this, 'BlogApi', {});
         blogApi.root.addMethod('GET', blogContentIntegration);
+        blogApi.root.addCorsPreflight({
+            allowOrigins: Cors.ALL_ORIGINS,
+            allowMethods: Cors.ALL_METHODS
+        });
 
         const blogContentTable = new Table(this, 'BlogContentTable', {
             partitionKey: {
