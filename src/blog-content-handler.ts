@@ -16,13 +16,13 @@ export class BlogContentHandler {
 }
 
 const jsonResponse = (status: number, body: Json): APIGatewayProxyStructuredResultV2 => ({
-    statusCode: 200,
+    statusCode: status,
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': '*',
     },
-    body: JSON.stringify(content)
+    body: JSON.stringify(body)
 });
 
 type Json = string | number | boolean | null | Json[] | {[key: string]: Json};
