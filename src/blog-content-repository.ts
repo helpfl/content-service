@@ -1,11 +1,12 @@
 import { DynamoDB } from 'aws-sdk';
-import { QueryInput } from 'aws-sdk/clients/dynamodb';
+import { Converter, QueryInput } from 'aws-sdk/clients/dynamodb';
+import * as Zod from 'zod';
 
 export class BlogContentRepository {
     constructor(private readonly dynamoDB: DynamoDB, private readonly uuid: () => string, ) {
     }
     
-    public async fetchByDateRange(start: number, end: number): Promise<string[]> {
+    public async fetchByDateRange(start: number, end: number): Promise<BlogPost[]> {
         const params: QueryInput = {
             TableName: 'BlogContent',
             IndexName: 'nameIndex',
@@ -29,7 +30,7 @@ export class BlogContentRepository {
 
         const result = await this.dynamoDB.query(params).promise();
         const items = result.Items || [];
-        return items.filter(hasContent).map(item => item.content.S);
+        return items.map(value => Converter.unmarshall(value)).filter(hasContent).sort((a, b) => b.date - a.date);
     }
 
     public async post(content: string): Promise<void> {
@@ -44,6 +45,9 @@ export class BlogContentRepository {
                 },
                 id: {
                     S: this.uuid()
+                },
+                name: {
+                    S: 'test'
                 }
             }
         };
@@ -52,8 +56,17 @@ export class BlogContentRepository {
     }
 }
 
-const hasContent = (item: DynamoDB.AttributeMap): item is ItemWithContent => {
-    return item?.content.S !== undefined;
+
+const hasContent = (item: unknown): item is BlogPost => {
+    const validation = blogPostValidation.safeParse(item);
+    return validation.success;
 };
 
-type ItemWithContent = {content: {S: string}};
+export type BlogPost = Zod.infer<typeof blogPostValidation>;
+
+const blogPostValidation = Zod.object({
+    date: Zod.number(),
+    content: Zod.string(),
+    id: Zod.string(),
+    name: Zod.string()
+});
