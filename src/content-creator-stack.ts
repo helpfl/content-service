@@ -56,5 +56,5 @@ const contentCreatorHandlerPath = __filename;
 const contentCreatorHandlerName = 'contentCreatorHandler';
 const secretsManager = new SecretsManager();
 const secretName = 'OpenAIApiKey';
-const contentCreator = new ContentCreator(secretsManager, secretName, fetch);
+const contentCreator = new ContentCreator(secretsManager, secretName);
 export const contentCreatorHandler = new ContentCreatorHandler(blogContentRepository, contentCreator).invoke;
