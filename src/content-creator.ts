@@ -1,6 +1,5 @@
 import { SecretsManager } from "aws-sdk";
-import { GetSecretValueResponse } from "aws-sdk/clients/secretsmanager";
-import fetch from "node-fetch";
+import * as fetch from "node-fetch";
 
 export class ContentCreator {
     constructor(
