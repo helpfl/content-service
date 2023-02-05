@@ -12,6 +12,8 @@ import { BlogContentRepository } from './blog-content-repository';
 
 export class BlogContentStack extends Stack {
 
+    table: Table;
+
     constructor(
         scope: Construct,
         id: string,
@@ -38,14 +40,14 @@ export class BlogContentStack extends Stack {
         });
         blogApi.root.addMethod('GET', blogContentIntegration);
 
-        const blogContentTable = new Table(this, 'BlogContentTable', {
+        this.table = new Table(this, 'BlogContentTable', {
             partitionKey: {
                 name: 'id',
                 type: AttributeType.STRING
             },
             tableName: 'BlogContent',
         });
-        blogContentTable.addGlobalSecondaryIndex({
+        this.table.addGlobalSecondaryIndex({
             indexName: 'nameIndex',
             partitionKey: {
                 name: 'name',
@@ -57,9 +59,7 @@ export class BlogContentStack extends Stack {
             }
         });
 
-        blogContentTable.grantReadData(getBlogContentFn);
-
-        new Secret(this, 'ApiKeySecret', {});
+        this.table.grantReadData(getBlogContentFn);
     }
 
 }

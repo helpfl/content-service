@@ -1,26 +1,30 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
-import { Cors, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
-import { Table, AttributeType } from 'aws-cdk-lib/aws-dynamodb';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
+import * as eventTargets from 'aws-cdk-lib/aws-events-targets';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB, SecretsManager } from 'aws-sdk';
 import { Construct } from 'constructs';
 import { v4 } from 'uuid';
-import { BlogContentHandler } from './blog-content-handler';
 import { BlogContentRepository } from './blog-content-repository';
 import { ContentCreatorHandler } from './content-creator-handler';
+import fetch from 'node-fetch';
+import { ContentCreator } from './content-creator';
+
+export type ContentCreatorStackProps = StackProps & {blogContentTable: Table};
 
 export class ContentCreatorStack extends Stack {
 
     constructor(
         scope: Construct,
         id: string,
-        props?: StackProps
+        props: ContentCreatorStackProps
     ) {
         super(scope, id, props);
     
-        const getBlogContentFn = new NodejsFunction(this, 'BlogContentFn', {
+        const createContentFn = new NodejsFunction(this, 'ContentCreateFn', {
             entry: contentCreatorHandlerPath,
             handler: contentCreatorHandlerName,
             runtime: Runtime.NODEJS_16_X,
@@ -28,39 +32,20 @@ export class ContentCreatorStack extends Stack {
                 NODE_OPTIONS: '--enable-source-maps',
             }
         });
-
-        const blogContentIntegration = new LambdaIntegration(getBlogContentFn);
-
-        const blogApi = new RestApi(this, 'BlogApi', {
-            defaultCorsPreflightOptions: {
-                allowOrigins: Cors.ALL_ORIGINS,
-                allowMethods: Cors.ALL_METHODS
-            }
+        const everydayAtMidnight = {
+            minute: '0',
+            hour: '0',
+            day: '*',
+            month: '*',
+            year: '*'
+        };
+        const cronRule = new Rule(this, 'CronRule', {
+            schedule: Schedule.cron(everydayAtMidnight)
         });
-        blogApi.root.addMethod('GET', blogContentIntegration);
-
-        const blogContentTable = new Table(this, 'BlogContentTable', {
-            partitionKey: {
-                name: 'id',
-                type: AttributeType.STRING
-            },
-            tableName: 'BlogContent',
-        });
-        blogContentTable.addGlobalSecondaryIndex({
-            indexName: 'nameIndex',
-            partitionKey: {
-                name: 'name',
-                type: AttributeType.STRING
-            },
-            sortKey: {
-                name: 'date',
-                type: AttributeType.NUMBER
-            }
-        });
-
-        blogContentTable.grantReadData(getBlogContentFn);
-
-        new Secret(this, 'ApiKeySecret', {});
+        cronRule.addTarget(new eventTargets.LambdaFunction(createContentFn));
+        props.blogContentTable.grantWriteData(createContentFn);
+        const secret = new Secret(this, 'OpenAIApiKeySecret', {secretName});
+        secret.grantRead(createContentFn);
     }
 
 }
@@ -69,4 +54,7 @@ const dynamoDb = new DynamoDB();
 const blogContentRepository = new BlogContentRepository(dynamoDb, v4);
 const contentCreatorHandlerPath = __filename;
 const contentCreatorHandlerName = 'contentCreatorHandler';
-export const contentCreatorHandler = new ContentCreatorHandler(blogContentRepository).invoke;
+const secretsManager = new SecretsManager();
+const secretName = 'OpenAIApiKey';
+const contentCreator = new ContentCreator(secretsManager, secretName, fetch);
+export const contentCreatorHandler = new ContentCreatorHandler(blogContentRepository, contentCreator).invoke;
