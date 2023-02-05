@@ -1,4 +1,4 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
 import * as eventTargets from 'aws-cdk-lib/aws-events-targets';
@@ -28,6 +28,7 @@ export class ContentCreatorStack extends Stack {
             entry: contentCreatorHandlerPath,
             handler: contentCreatorHandlerName,
             runtime: Runtime.NODEJS_16_X,
+            timeout: Duration.minutes(3),
             environment: {
                 NODE_OPTIONS: '--enable-source-maps',
             }
