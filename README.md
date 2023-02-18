@@ -1,8 +1,6 @@
-# Blog
+# Content Service
 
-This is a blank project for CDK development with TypeScript.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+This is a microservice built on aws using aws cdk
 
 ## Useful commands
 
