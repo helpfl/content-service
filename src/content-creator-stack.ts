@@ -10,7 +10,6 @@ import { Construct } from 'constructs';
 import { v4 } from 'uuid';
 import { BlogContentRepository } from './blog-content-repository';
 import { ContentCreatorHandler } from './content-creator-handler';
-import * as fetch from 'node-fetch';
 import { ContentCreator } from './content-creator';
 
 export type ContentCreatorStackProps = StackProps & {blogContentTable: Table};
