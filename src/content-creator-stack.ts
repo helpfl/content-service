@@ -5,12 +5,8 @@ import * as eventTargets from 'aws-cdk-lib/aws-events-targets';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { DynamoDB, SecretsManager } from 'aws-sdk';
 import { Construct } from 'constructs';
-import { v4 } from 'uuid';
-import { BlogContentRepository } from './blog-content-repository';
-import { ContentCreatorHandler } from './content-creator-handler';
-import { ContentCreator } from './content-creator';
+import * as path from 'path';
 
 export type ContentCreatorStackProps = StackProps & {blogContentTable: Table};
 
@@ -24,8 +20,8 @@ export class ContentCreatorStack extends Stack {
         super(scope, id, props);
     
         const createContentFn = new NodejsFunction(this, 'ContentCreateFn', {
-            entry: contentCreatorHandlerPath,
-            handler: contentCreatorHandlerName,
+            entry: path.join(__dirname, '..', 'build', 'content-creator-handler.js'),
+            handler: 'handler',
             runtime: Runtime.NODEJS_16_X,
             timeout: Duration.minutes(3),
             environment: {
@@ -44,17 +40,8 @@ export class ContentCreatorStack extends Stack {
         });
         cronRule.addTarget(new eventTargets.LambdaFunction(createContentFn));
         props.blogContentTable.grantWriteData(createContentFn);
-        const secret = new Secret(this, 'OpenAIApiKeySecret', {secretName});
+        const secret = new Secret(this, 'OpenAIApiKeySecret', {secretName: 'OpenAIApiKey'});
         secret.grantRead(createContentFn);
     }
 
 }
-
-const dynamoDb = new DynamoDB();
-const blogContentRepository = new BlogContentRepository(dynamoDb, v4);
-const contentCreatorHandlerPath = __filename;
-const contentCreatorHandlerName = 'contentCreatorHandler';
-const secretsManager = new SecretsManager();
-const secretName = 'OpenAIApiKey';
-const contentCreator = new ContentCreator(secretsManager, secretName);
-export const contentCreatorHandler = new ContentCreatorHandler(blogContentRepository, contentCreator).invoke;

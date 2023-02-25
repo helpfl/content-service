@@ -1,5 +1,5 @@
-import { SecretsManager } from "aws-sdk";
 import {Configuration, OpenAIApi} from 'openai';
+import {SecretsManager} from '@aws-sdk/client-secrets-manager';
 
 export class ContentCreator {
     constructor(
@@ -31,7 +31,7 @@ export class ContentCreator {
     }
 
     private async getApiKey(): Promise<string> {
-        const {SecretString: apiKey} = await this.secretsManager.getSecretValue({SecretId: this.secretName}).promise();
+        const {SecretString: apiKey} = await this.secretsManager.getSecretValue({SecretId: this.secretName});
         if (apiKey === undefined) {
             throw new Error('No API key found');
         }

@@ -14,13 +14,13 @@ jobs:
         run: |
           npm ci
 
-      - name: build
-        run: |
-          npm run build
-
       - name: Test
         run: |
           npm test
+
+      - name: build
+        run: |
+          npm run build
 
       - name: cdk deploy
         uses: youyo/aws-cdk-github-actions@v2

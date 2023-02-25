@@ -1,6 +1,6 @@
-import { DynamoDB } from 'aws-sdk';
-import { Converter, QueryInput } from 'aws-sdk/clients/dynamodb';
 import * as Zod from 'zod';
+import {DynamoDB, PutItemInput, QueryInput} from '@aws-sdk/client-dynamodb';
+import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 
 export class BlogContentRepository {
     constructor(private readonly dynamoDB: DynamoDB, private readonly uuid: () => string, ) {
@@ -11,48 +11,34 @@ export class BlogContentRepository {
             TableName: 'BlogContent',
             IndexName: 'nameIndex',
             KeyConditionExpression: '#name = :name AND #date BETWEEN :start AND :end',
-            ExpressionAttributeValues: {
-                ':start': {
-                    N: start.toString()
-                },
-                ':end': {
-                    N: end.toString()
-                },
-                ':name': {
-                    S: 'test'
-                }
-            },
+            ExpressionAttributeValues: marshall({
+                ':start': start,
+                ':end': end,
+                ':name': 'test'
+            }),
             ExpressionAttributeNames: {
                 '#date': 'date',
                 '#name': 'name'
             }
         };
 
-        const result = await this.dynamoDB.query(params).promise();
+        const result = await this.dynamoDB.query(params);
         const items = result.Items || [];
-        return items.map(value => Converter.unmarshall(value)).filter(hasContent).sort((a, b) => b.date - a.date);
+        return items.map(value => unmarshall(value)).filter(hasContent).sort((a, b) => b.date - a.date);
     }
 
     public async post(content: string): Promise<void> {
-        const params: DynamoDB.PutItemInput = {
+        const params: PutItemInput = {
             TableName: 'BlogContent',
-            Item: {
-                date: {
-                    N: Date.now().toString()
-                },
-                content: {
-                    S: content
-                },
-                id: {
-                    S: this.uuid()
-                },
-                name: {
-                    S: 'test'
-                }
-            }
+            Item: marshall({
+                date: Date.now(),
+                content,
+                id: this.uuid(),
+                name: 'test'
+            })
         };
 
-        await this.dynamoDB.putItem(params).promise();
+        await this.dynamoDB.putItem(params);
     }
 }
 
