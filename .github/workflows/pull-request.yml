@@ -6,13 +6,30 @@ on:
       - 'master'
 
 jobs:
-  test:
+
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: npm ci
+      - name: Install Dependencies
+        run: |
+          npm ci
+
+      - name: Test
+        run: |
+          npm run lint
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
         run: |
           npm ci
 
@@ -21,18 +38,19 @@ jobs:
           npm test
 
   synth:
-    - name: checkout
+    - name: Synthesize
+    - name: Checkout
       uses: actions/checkout@v2
 
-    - name: npm ci
+    - name: Install Dependencies
       run: |
         npm ci
 
-    - name: build
+    - name: Build
       run: |
         npm run build
 
-    - name: cdk synth
+    - name: Synthesize
       uses: youyo/aws-cdk-github-actions@v2
       with:
         cdk_subcommand: 'synth'
@@ -44,14 +62,15 @@ jobs:
         AWS_DEFAULT_REGION: 'us-west-2'
 
   diff:
-    - name: checkout
+    - name: Diff
+    - name: Checkout
       uses: actions/checkout@v2
 
-    - name: npm ci
+    - name: Install Dependencies
       run: |
         npm ci
 
-    - name: cdk diff
+    - name: Diff
       uses: youyo/aws-cdk-github-actions@v2
       with:
         cdk_subcommand: 'diff'
