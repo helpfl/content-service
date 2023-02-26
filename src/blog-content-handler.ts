@@ -1,5 +1,5 @@
-import { APIGatewayProxyHandlerV2, APIGatewayProxyStructuredResultV2 } from "aws-lambda";
-import { BlogContentRepository } from "./blog-content-repository";
+import { APIGatewayProxyHandlerV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { BlogContentRepository } from './blog-content-repository';
 import {v4} from 'uuid';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
 
