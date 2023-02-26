@@ -1,5 +1,5 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
-import {Cors, DomainName, EndpointType, LambdaIntegration, RestApi} from 'aws-cdk-lib/aws-apigateway';
+import {BasePathMapping, Cors, DomainName, EndpointType, LambdaIntegration, RestApi} from 'aws-cdk-lib/aws-apigateway';
 import { Table, AttributeType } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -55,11 +55,10 @@ export class ContentManagementStack extends Stack {
             endpointType: EndpointType.EDGE,
         });
 
-        new CfnApiMapping(this, 'ApiMapping', {
-            apiId: api.restApiId,
-            domainName: domainName.domainName,
-            stage: api.deploymentStage.stageName,
-            apiMappingKey: 'content'
+        new BasePathMapping(this, 'ApiMapping', {
+            domainName: domainName,
+            restApi: api,
+            basePath: 'content'
         });
 
         this.table = new Table(this, 'ContentTable', {
