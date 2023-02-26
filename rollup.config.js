@@ -19,7 +19,7 @@ function bundleHandler(name) {
                     moduleResolution: 'node'
                 }
             }),
-            resolve({preferBuiltins: true}),
+            resolve(),
             commonjs(),
             terser(),
             json()
