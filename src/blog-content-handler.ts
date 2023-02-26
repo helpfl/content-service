@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandlerV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { BlogContentRepository } from './blog-content-repository';
-import {v4} from 'uuid';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
+import {nanoid} from 'nanoid';
 
 export class BlogContentHandler {
 
@@ -39,5 +39,5 @@ const validRequest = (queryStringParameters: unknown): queryStringParameters is 
 
 
 const dynamoDb = new DynamoDB({});
-const blogContentRepository = new BlogContentRepository(dynamoDb, v4);
+const blogContentRepository = new BlogContentRepository(dynamoDb, nanoid);
 export const handler = new BlogContentHandler(blogContentRepository).invoke;

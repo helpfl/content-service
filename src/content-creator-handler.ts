@@ -2,7 +2,7 @@ import { BlogContentRepository } from './blog-content-repository';
 import { ContentCreator } from './content-creator';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
 import {SecretsManager} from '@aws-sdk/client-secrets-manager';
-import {v4} from 'uuid';
+import {nanoid} from 'nanoid';
 
 export class ContentCreatorHandler {
 
@@ -18,7 +18,7 @@ export class ContentCreatorHandler {
 }
 
 const dynamoDb = new DynamoDB({});
-const blogContentRepository = new BlogContentRepository(dynamoDb, v4);
+const blogContentRepository = new BlogContentRepository(dynamoDb, nanoid);
 const secretsManager = new SecretsManager({});
 const secretName = 'OpenAIApiKey';
 const contentCreator = new ContentCreator(secretsManager, secretName);
