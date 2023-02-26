@@ -14,7 +14,7 @@ export class ContentCreator {
         const todaysDate = new Date().toISOString().split('T')[0];
         const prompt = `In Markdown describe top 10 latest tech news of ${todaysDate} and write a paragraph about each of them with opinion.`;
         const completion = await openai.createCompletion({
-            model: "text-davinci-003",
+            model: 'text-davinci-003',
             prompt,
             temperature: 1.0,
             max_tokens: 2000,

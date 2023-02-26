@@ -1,7 +1,14 @@
+name: Deploy
 on:
   push:
     branches:
       - master
+    paths:
+        - 'src/**'
+        - 'cdk.json'
+        - 'package.json'
+        - 'package-lock.json'
+        - 'tsconfig.json'
 
 jobs:
   deploy:
@@ -10,7 +17,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: npm ci
+      - name: Install Dependencies
         run: |
           npm ci
 
@@ -18,11 +25,7 @@ jobs:
         run: |
           npm test
 
-      - name: build
-        run: |
-          npm run build
-
-      - name: cdk deploy
+      - name: Deploy
         uses: youyo/aws-cdk-github-actions@v2
         with:
           cdk_subcommand: 'deploy'
