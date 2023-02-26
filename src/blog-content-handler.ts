@@ -9,7 +9,7 @@ export class BlogContentHandler {
 
     invoke: APIGatewayProxyHandlerV2 = async ({queryStringParameters}) => {
         if (!validRequest(queryStringParameters)) {
-            return jsonResponse(400, {message: 'Invalid request'});
+            return jsonResponse(422, {message: 'Invalid request'});
         }
 
         const content = await this.blogContentRepository.fetchByDateRange(Number(queryStringParameters.start), Number(queryStringParameters.end));
