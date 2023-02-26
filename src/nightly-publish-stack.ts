@@ -8,19 +8,19 @@ import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
-export type ContentCreatorStackProps = StackProps & {blogContentTable: Table};
+export type NightlyPublishStackProps = StackProps & {contentTable: Table};
 
 export class NightlyPublishStack extends Stack {
 
     constructor(
         scope: Construct,
         id: string,
-        props: ContentCreatorStackProps
+        props: NightlyPublishStackProps
     ) {
         super(scope, id, props);
     
-        const createContentFn = new NodejsFunction(this, 'ContentCreateFn', {
-            entry: path.join(__dirname, '..', 'build', 'content-creator-handler.js'),
+        const nightlyPublishFn = new NodejsFunction(this, 'NightlyPublishFn', {
+            entry: path.join(__dirname, '..', 'build', 'nightly-publish-handler.js'),
             handler: 'handler',
             runtime: Runtime.NODEJS_16_X,
             timeout: Duration.minutes(3),
@@ -38,10 +38,10 @@ export class NightlyPublishStack extends Stack {
         const cronRule = new Rule(this, 'CronRule', {
             schedule: Schedule.cron(everydayAtMidnight)
         });
-        cronRule.addTarget(new eventTargets.LambdaFunction(createContentFn));
-        props.blogContentTable.grantWriteData(createContentFn);
+        cronRule.addTarget(new eventTargets.LambdaFunction(nightlyPublishFn));
+        props.contentTable.grantWriteData(nightlyPublishFn);
         const secret = new Secret(this, 'OpenAIApiKeySecret', {secretName: 'OpenAIApiKey'});
-        secret.grantRead(createContentFn);
+        secret.grantRead(nightlyPublishFn);
     }
 
 }

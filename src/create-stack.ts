@@ -9,5 +9,5 @@ const configuration = {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 };
 
-const blogContentStack = new ContentManagementStack(app, 'BlogStack', configuration)
-new NightlyPublishStack(app, 'ContentCreatorStack', {...configuration, blogContentTable: blogContentStack.table});
+const contentStack = new ContentManagementStack(app, 'ContentManagementStack', configuration)
+new NightlyPublishStack(app, 'NightlyPublishStack', {...configuration, contentTable: contentStack.table});

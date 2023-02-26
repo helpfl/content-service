@@ -17,8 +17,8 @@ export class ContentManagementStack extends Stack {
     ) {
         super(scope, id, props);
 
-        const getBlogContentFn = new NodejsFunction(this, 'BlogContentFn', {
-            entry: path.join(__dirname, '..', 'build', 'blog-content-handler.js'),
+        const fn = new NodejsFunction(this, 'ApiHandler', {
+            entry: path.join(__dirname, '..', 'build', 'content-management-handler.js'),
             handler: 'handler',
             runtime: Runtime.NODEJS_16_X,
             environment: {
@@ -26,22 +26,22 @@ export class ContentManagementStack extends Stack {
             }
         });
 
-        const blogContentIntegration = new LambdaIntegration(getBlogContentFn);
+        const lambdaIntegration = new LambdaIntegration(fn);
 
-        const blogApi = new RestApi(this, 'BlogApi', {
+        const api = new RestApi(this, 'API', {
             defaultCorsPreflightOptions: {
                 allowOrigins: Cors.ALL_ORIGINS,
                 allowMethods: Cors.ALL_METHODS
             }
         });
-        blogApi.root.addMethod('GET', blogContentIntegration);
+        api.root.addMethod('GET', lambdaIntegration);
 
-        this.table = new Table(this, 'BlogContentTable', {
+        this.table = new Table(this, 'ContentTable', {
             partitionKey: {
                 name: 'id',
                 type: AttributeType.STRING
             },
-            tableName: 'BlogContent',
+            tableName: 'Content',
         });
         this.table.addGlobalSecondaryIndex({
             indexName: 'nameIndex',
@@ -55,7 +55,7 @@ export class ContentManagementStack extends Stack {
             }
         });
 
-        this.table.grantReadData(getBlogContentFn);
+        this.table.grantReadData(fn);
     }
 
 }
