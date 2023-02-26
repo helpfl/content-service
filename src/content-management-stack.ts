@@ -6,7 +6,6 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import * as path from 'path';
 import {Certificate} from 'aws-cdk-lib/aws-certificatemanager';
-import {CfnApiMapping} from 'aws-cdk-lib/aws-apigatewayv2';
 
 export type ContentManagementStackProps = StackProps & {
     domainName: string;
