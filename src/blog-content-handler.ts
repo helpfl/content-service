@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import { APIGatewayProxyHandlerV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { BlogContentRepository } from './blog-content-repository';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';

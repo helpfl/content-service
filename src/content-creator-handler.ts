@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import { BlogContentRepository } from './blog-content-repository';
 import { ContentCreator } from './content-creator';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
