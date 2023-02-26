@@ -4,11 +4,11 @@ import { terser } from 'rollup-plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import json from '@rollup/plugin-json';
 
-function bundleHandler(name) {
+function bundleHandler(path) {
     return {
-        input: `src/${name}.ts`,
+        input: `src/${path}.ts`,
         output: {
-            file: `build/${name}.js`,
+            file: `build/${path}.js`,
             sourcemap: true
         },
         plugins: [
@@ -19,7 +19,7 @@ function bundleHandler(name) {
                     moduleResolution: 'node'
                 }
             }),
-            resolve(),
+            resolve({exportConditions: ["node"]}),
             commonjs(),
             terser(),
             json()
@@ -28,6 +28,6 @@ function bundleHandler(name) {
 }
 
 export default [
-    bundleHandler('blog-content-handler'),
-    bundleHandler('content-creator-handler')
+    bundleHandler('content-management-handler'),
+    bundleHandler('nightly-publish-handler')
 ];
