@@ -25,10 +25,6 @@ jobs:
         run: |
           npm test
 
-      - name: Build
-        run: |
-          npm run build
-
       - name: Deploy
         uses: youyo/aws-cdk-github-actions@v2
         with:
