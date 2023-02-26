@@ -37,7 +37,6 @@ const validRequest = (queryStringParameters: unknown): queryStringParameters is 
         'end' in queryStringParameters;
 };
 
-
 const dynamoDb = new DynamoDB({});
 const blogContentRepository = new BlogContentRepository(dynamoDb, nanoid);
 export const handler = new BlogContentHandler(blogContentRepository).invoke;
