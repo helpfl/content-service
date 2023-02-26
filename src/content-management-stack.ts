@@ -17,7 +17,7 @@ export class ContentManagementStack extends Stack {
     ) {
         super(scope, id, props);
 
-        const fn = new NodejsFunction(this, 'ApiHandler', {
+        const apiFunction = new NodejsFunction(this, 'ApiFunction', {
             entry: path.join(__dirname, '..', 'build', 'content-management-handler.js'),
             handler: 'handler',
             runtime: Runtime.NODEJS_16_X,
@@ -26,7 +26,7 @@ export class ContentManagementStack extends Stack {
             }
         });
 
-        const lambdaIntegration = new LambdaIntegration(fn);
+        const lambdaIntegration = new LambdaIntegration(apiFunction);
 
         const api = new RestApi(this, 'API', {
             defaultCorsPreflightOptions: {
@@ -55,7 +55,7 @@ export class ContentManagementStack extends Stack {
             }
         });
 
-        this.table.grantReadData(fn);
+        this.table.grantReadData(apiFunction);
     }
 
 }
