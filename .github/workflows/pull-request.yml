@@ -1,13 +1,9 @@
 on:
-  push:
+  pull_request:
+    types:
+      - opened
     branches:
-      - master
-    paths:
-        - 'src/**'
-        - 'cdk.json'
-        - 'package.json'
-        - 'package-lock.json'
-        - 'tsconfig.json'
+      - 'master'
 
 jobs:
   deploy:
@@ -28,10 +24,21 @@ jobs:
         run: |
           npm run build
 
-      - name: cdk deploy
+      - name: cdk synth
         uses: youyo/aws-cdk-github-actions@v2
         with:
-          cdk_subcommand: 'deploy'
+          cdk_subcommand: 'synth'
+          cdk_args: '--require-approval never'
+          actions_comment: false
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-west-2'
+
+      - name: cdk diff
+        uses: youyo/aws-cdk-github-actions@v2
+        with:
+          cdk_subcommand: 'diff'
           cdk_args: '--require-approval never'
           actions_comment: false
         env:
