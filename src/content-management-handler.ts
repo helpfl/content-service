@@ -1,12 +1,11 @@
-import 'react-native-get-random-values';
 import { APIGatewayProxyHandlerV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
-import { BlogContentRepository } from './blog-content-repository';
+import { ContentRepository } from './content-repository';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
 import {nanoid} from 'nanoid';
 
-export class BlogContentHandler {
+export class ContentManagementHandler {
 
-    constructor(private readonly blogContentRepository: BlogContentRepository) {}
+    constructor(private readonly blogContentRepository: ContentRepository) {}
 
     invoke: APIGatewayProxyHandlerV2 = async ({queryStringParameters}) => {
         if (!validRequest(queryStringParameters)) {
@@ -39,5 +38,5 @@ const validRequest = (queryStringParameters: unknown): queryStringParameters is 
 };
 
 const dynamoDb = new DynamoDB({});
-const blogContentRepository = new BlogContentRepository(dynamoDb, nanoid);
-export const handler = new BlogContentHandler(blogContentRepository).invoke;
+const blogContentRepository = new ContentRepository(dynamoDb, nanoid);
+export const handler = new ContentManagementHandler(blogContentRepository).invoke;

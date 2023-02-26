@@ -2,7 +2,7 @@ import * as Zod from 'zod';
 import {DynamoDB, PutItemInput, QueryInput} from '@aws-sdk/client-dynamodb';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 
-export class BlogContentRepository {
+export class ContentRepository {
     constructor(private readonly dynamoDB: DynamoDB, private readonly uuid: () => string, ) {
     }
     

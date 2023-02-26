@@ -1,7 +1,7 @@
 import {Configuration, OpenAIApi} from 'openai';
 import {SecretsManager} from '@aws-sdk/client-secrets-manager';
 
-export class ContentCreator {
+export class ContentGenerator {
     constructor(
         private readonly secretsManager: SecretsManager,
         private readonly secretName: string,

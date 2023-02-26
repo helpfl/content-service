@@ -6,7 +6,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
-export class BlogContentStack extends Stack {
+export class ContentManagementStack extends Stack {
 
     table: Table;
 

@@ -10,7 +10,7 @@ import * as path from 'path';
 
 export type ContentCreatorStackProps = StackProps & {blogContentTable: Table};
 
-export class ContentCreatorStack extends Stack {
+export class NightlyPublishStack extends Stack {
 
     constructor(
         scope: Construct,
