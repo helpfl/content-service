@@ -11,14 +11,15 @@ export type ContentServiceStackProps = StackProps & {
     stage: string,
 };
 
+// TODO this stack should be for the rest api only
 export class ContentServiceStack extends Stack {
-    constructor(scope: Construct, id: string, props: ContentServiceStackProps) {
-        super(scope, id, props);
+    constructor(scope: Construct, props: ContentServiceStackProps) {
+        super(scope, `ContentService-${props.stage}`, props);
 
         const apiFunction = new Function(this, 'RestApiFunction', {
           runtime: Runtime.NODEJS_16_X,
           handler: 'rest-api-handler.handler',
-          code: Code.fromAsset(path.join(__dirname, '..', 'build')),
+          code: Code.fromAsset(path.join(__dirname, '..', 'build', 'rest-api'))
         });
 
         const lambdaIntegration = new LambdaIntegration(apiFunction);

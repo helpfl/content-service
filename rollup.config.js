@@ -23,5 +23,6 @@ function bundleHandler(input, output) {
 }
 
 export default [
-    bundleHandler('src/rest-api-handler.ts', 'build/rest-api-handler.mjs'),
+    bundleHandler('src/rest-api-handler.ts', 'build/rest-api/rest-api-handler.mjs'),
+    bundleHandler('src/daily-content-handler.ts', 'build/daily-content/daily-content-handler.mjs'),
 ];
