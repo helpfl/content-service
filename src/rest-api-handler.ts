@@ -1,14 +1,14 @@
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 
-export class HelloWorldHandler {
+export class RestApiHandler {
 
     invoke = (): Promise<APIGatewayProxyStructuredResultV2> => {
         return Promise.resolve({
             statusCode: 200,
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({hello: 'World'})
+            body: JSON.stringify({content: '# Hello World'})
         });
     }
 }
 
-export const handler = new HelloWorldHandler().invoke;
+export const handler = new RestApiHandler().invoke;

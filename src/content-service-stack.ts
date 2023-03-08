@@ -7,23 +7,23 @@ import {Certificate} from 'aws-cdk-lib/aws-certificatemanager';
 import {ARecord, HostedZone, RecordTarget} from 'aws-cdk-lib/aws-route53';
 import {ApiGateway} from 'aws-cdk-lib/aws-route53-targets';
 
-export type HelloWorldProps = StackProps & {
+export type ContentServiceStackProps = StackProps & {
     stage: string,
 };
 
-export class HelloWorldServiceStack extends Stack {
-    constructor(scope: Construct, id: string, props: HelloWorldProps) {
+export class ContentServiceStack extends Stack {
+    constructor(scope: Construct, id: string, props: ContentServiceStackProps) {
         super(scope, id, props);
 
-        const apiFunction = new Function(this, 'MyFunction', {
+        const apiFunction = new Function(this, 'RestApiFunction', {
           runtime: Runtime.NODEJS_16_X,
-          handler: 'hello-world-handler.handler',
+          handler: 'rest-api-handler.handler',
           code: Code.fromAsset(path.join(__dirname, '..', 'build')),
         });
 
         const lambdaIntegration = new LambdaIntegration(apiFunction);
 
-        const api = new RestApi(this, `${props.stage}Api`, {
+        const api = new RestApi(this, `${props.stage}RestApi`, {
             defaultCorsPreflightOptions: {
                 allowOrigins: Cors.ALL_ORIGINS,
                 allowMethods: Cors.ALL_METHODS
@@ -42,7 +42,7 @@ export class HelloWorldServiceStack extends Stack {
             domainName: `${props.stage}.api.helpfl.click`,
             certificate: cert,
             endpointType: EndpointType.EDGE,
-            basePath: 'hello-world'
+            basePath: '/content'
         });
 
         new ARecord(this, 'ARecord', {

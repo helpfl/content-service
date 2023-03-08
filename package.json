@@ -2,7 +2,7 @@
   "name": "content-service",
   "version": "0.1.0",
   "scripts": {
-    "test": "jest src/**/*.test.ts",
+    "test": "jest",
     "test:e2e": "jest src/**/*.e2e.ts",
     "build": "rollup -c --bundleConfigAsCjs",
     "transpile": "tsc",
