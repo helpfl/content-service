@@ -1,11 +1,17 @@
-# Content Service
+# My serverless backend template
 
-This is a microservice built on aws using aws cdk
+## Features
+* Jest unit/e2e testing
+* CDK IAC
+* Automated deployments
+* Each Pr spins up a new seperate deployment
+* Small lambda bundle sizes using Es Module
+* Typescript
+* Linting
+
 
 ## Useful commands
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
 * `npm run test`    perform the jest unit tests
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
+* `npm run lint`    lint new code
+* `npx cdk diff`    view cdk diff

@@ -2,14 +2,16 @@
   "name": "content-service",
   "version": "0.1.0",
   "scripts": {
-    "test": "jest",
+    "test": "jest src/**/*.test.ts",
+    "test:e2e": "jest src/**/*.e2e.ts",
     "build": "rollup -c --bundleConfigAsCjs",
     "transpile": "tsc",
     "lint": "eslint . --ext .ts --ignore-path .gitignore",
     "lint:fix": "npm run lint -- --fix",
     "clean:install": "rm -rf node_modules && rm -rf package-lock.json && npm i",
     "clean:build": "rm -rf dist && rm -rf build && npm run build",
-    "clean:install:build": "npm run clean:install && npm run clean:build"
+    "clean:install:build": "npm run clean:install && npm run clean:build",
+    "compile": "tsc"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.0.1",
@@ -21,13 +23,11 @@
     "@types/node": "^18.11.11",
     "@types/node-fetch": "^2.6.2",
     "@types/prettier": "2.6.0",
-    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
     "aws-cdk": "^2.53.0",
     "aws-cdk-lib": "2.40.0",
     "constructs": "^10.0.0",
-    "esbuild": "^0.15.16",
     "eslint": "^8.34.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "jest": "^27.5.1",
@@ -42,12 +42,7 @@
     "@aws-sdk/client-dynamodb": "^3.279.0",
     "@aws-sdk/client-secrets-manager": "^3.279.0",
     "@aws-sdk/util-dynamodb": "^3.279.0",
-    "nanoid": "^4.0.1",
-    "node-fetch": "^2.6.9",
-    "openai": "^3.1.0",
-    "react-native-get-random-values": "^1.8.0",
-    "source-map-support": "^0.5.21",
-    "zod": "3.20.2"
+    "source-map-support": "^0.5.21"
   },
   "jest": {
     "preset": "ts-jest",
@@ -55,9 +50,6 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testEnvironment": "node",
-    "clearMocks": true,
-    "testMatch": [
-      "**/*.test.ts"
-    ]
+    "clearMocks": true
   }
 }
