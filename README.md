@@ -1,13 +1,12 @@
-# My serverless backend template
+# Content service
 
-## Features
-* Jest unit/e2e testing
-* CDK IAC
-* Automated deployments
-* Each Pr spins up a new seperate deployment
-* Small lambda bundle sizes using Es Module
-* Typescript
-* Linting
+## Description
+
+This service is responsible for managing content. It is a serverless application that uses AWS Lambda and DynamoDB.
+
+## Prerequisites
+
+* Node.js 14.x
 
 
 ## Useful commands
