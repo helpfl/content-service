@@ -42,7 +42,7 @@ export class ContentServiceStack extends Stack {
             domainName: `${props.stage}.api.helpfl.click`,
             certificate: cert,
             endpointType: EndpointType.EDGE,
-            basePath: '/content'
+            basePath: 'content'
         });
 
         new ARecord(this, 'ARecord', {
