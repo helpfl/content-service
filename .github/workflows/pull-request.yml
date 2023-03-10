@@ -121,9 +121,8 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            # Successful Deployment
-            Stage: ${{ env.STAGE }}
-            Url: ${{ env.STAGE }}.api.helpfl.click
+            # Success ✅
+            The api was successfully deploy and available at https://${{ env.STAGE }}.api.helpfl.click
 
   e2e:
     name: E2E Test
