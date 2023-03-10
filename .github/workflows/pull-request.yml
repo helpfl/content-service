@@ -41,12 +41,6 @@ jobs:
     name: Synthesize
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Slug action
-        uses: rlespinasse/github-slug-action@v3.x
-
-      - name: Init STAGE variable
-        run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -65,18 +59,12 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-west-2'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STAGE: ${{ env.STAGE }}
+          STAGE: 'prod'
 
   diff:
     name: Diff
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Slug action
-        uses: rlespinasse/github-slug-action@v3.x
-
-      - name: Init STAGE variable
-        run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -95,7 +83,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-west-2'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STAGE: ${{ env.STAGE }}
+          STAGE: 'prod'
 
   deploy:
     name: Deploy
