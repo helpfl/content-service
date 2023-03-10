@@ -48,17 +48,17 @@ jobs:
         run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
 
       - name: Deploy Success
-          env:
-            URL: ${{ github.event.issue.comments_url }}
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            STAGE: ${{ env.STAGE }}
-          run: |
-            curl \
-              -X POST \
-              $URL \
-              -H "Content-Type: application/json" \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              --data '{ "body": "# Success \n stage: $STAGE" }'
+        env:
+          URL: ${{ github.event.issue.comments_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STAGE: ${{ env.STAGE }}
+        run: |
+          curl \
+            -X POST \
+            $URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            --data '{ "body": "# Success \n stage: $STAGE" }'
 
       - name: Checkout
         uses: actions/checkout@v3

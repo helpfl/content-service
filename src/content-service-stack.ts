@@ -1,4 +1,4 @@
-import {RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib';
+import {CfnOutput, RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib';
 import * as path from 'path';
 import {Construct} from 'constructs';
 import {Code, Function, Runtime} from 'aws-cdk-lib/aws-lambda';
@@ -67,7 +67,7 @@ export class ContentServiceStack extends Stack {
             basePath: 'content'
         });
 
-        new ARecord(this, 'ARecord', {
+        const aRecord = new ARecord(this, 'ARecord', {
             recordName: `${stage}.api.helpfl.click`,
             target: RecordTarget.fromAlias(new ApiGateway(api)),
             zone: HostedZone.fromLookup(this, 'HostedZone', {
@@ -75,5 +75,8 @@ export class ContentServiceStack extends Stack {
             })
         });
 
+        new CfnOutput(this, 'ApiUrl', {
+            value: api.url
+        });
     }
 }
