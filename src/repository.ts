@@ -1,4 +1,4 @@
-import {Content, IContent} from './content';
+import {IContent} from './content';
 import {PaginatedList} from './pagination';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
 import {marshall} from '@aws-sdk/util-dynamodb';
@@ -14,7 +14,7 @@ export class ContentRepository implements IContentRepository {
   }
 
 
-  listContent(start: string, end: string, pageNextToken?: string): Promise<PaginatedList<IContent>> {
+  listContent(): Promise<PaginatedList<IContent>> {
     throw new Error('Not implemented');
   }
 
