@@ -1,11 +1,13 @@
-import {Stack, StackProps} from 'aws-cdk-lib';
+import {RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib';
 import * as path from 'path';
 import {Construct} from 'constructs';
-import {Code, Runtime, Function} from 'aws-cdk-lib/aws-lambda';
+import {Code, Function, Runtime} from 'aws-cdk-lib/aws-lambda';
 import {Cors, EndpointType, LambdaIntegration, RestApi} from 'aws-cdk-lib/aws-apigateway';
 import {Certificate} from 'aws-cdk-lib/aws-certificatemanager';
 import {ARecord, HostedZone, RecordTarget} from 'aws-cdk-lib/aws-route53';
 import {ApiGateway} from 'aws-cdk-lib/aws-route53-targets';
+import {Table} from 'aws-cdk-lib/aws-dynamodb';
+import {AttributeType} from 'aws-cdk-lib/aws-dynamodb/lib/table';
 
 export type ContentServiceStackProps = StackProps & {
     stage: string,
@@ -14,6 +16,24 @@ export type ContentServiceStackProps = StackProps & {
 export class ContentServiceStack extends Stack {
     constructor(scope: Construct, id: string, props: ContentServiceStackProps) {
         super(scope, id, props);
+        const {stage} = props;
+        const removalPolicy = stage === 'prod' ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY;
+        const table = new Table(this, 'ContentTable', {
+            tableName: 'ContentTable',
+            removalPolicy,
+            partitionKey: {
+                name: 'id',
+                type: AttributeType.STRING,
+            },
+        });
+        
+        table.addGlobalSecondaryIndex({
+            indexName: 'byUserId',
+            partitionKey: {
+                name: 'withUserId',
+                type: AttributeType.STRING,
+            },
+        });
 
         const apiFunction = new Function(this, 'RestApiFunction', {
           runtime: Runtime.NODEJS_16_X,
@@ -21,9 +41,11 @@ export class ContentServiceStack extends Stack {
           code: Code.fromAsset(path.join(__dirname, '..', 'build')),
         });
 
+        table.grantFullAccess(apiFunction);
+
         const lambdaIntegration = new LambdaIntegration(apiFunction);
 
-        const api = new RestApi(this, `${props.stage}RestApi`, {
+        const api = new RestApi(this, `${stage}RestApi`, {
             defaultCorsPreflightOptions: {
                 allowOrigins: Cors.ALL_ORIGINS,
                 allowMethods: Cors.ALL_METHODS
@@ -31,6 +53,7 @@ export class ContentServiceStack extends Stack {
         });
 
         api.root.addMethod('GET', lambdaIntegration);
+        api.root.addMethod('POST', lambdaIntegration);
 
         const cert = Certificate.fromCertificateArn(
           this,
@@ -39,14 +62,14 @@ export class ContentServiceStack extends Stack {
         );
 
         api.addDomainName('DomainName', {
-            domainName: `${props.stage}.api.helpfl.click`,
+            domainName: `${stage}.api.helpfl.click`,
             certificate: cert,
             endpointType: EndpointType.EDGE,
             basePath: 'content'
         });
 
         new ARecord(this, 'ARecord', {
-            recordName: `${props.stage}.api.helpfl.click`,
+            recordName: `${stage}.api.helpfl.click`,
             target: RecordTarget.fromAlias(new ApiGateway(api)),
             zone: HostedZone.fromLookup(this, 'HostedZone', {
                 domainName: 'helpfl.click'
