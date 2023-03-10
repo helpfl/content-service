@@ -47,13 +47,6 @@ jobs:
       - name: Init STAGE variable
         run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
 
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            Stage: ${{ env.STAGE }}
-            Url: ${{ env.STAGE }}.api.helpfl.click
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -66,7 +59,7 @@ jobs:
         with:
           cdk_subcommand: 'synth'
           cdk_args: '--require-approval never'
-          actions_comment: true
+          actions_comment: false
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -135,6 +128,14 @@ jobs:
           AWS_DEFAULT_REGION: 'us-west-2'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           STAGE: ${{ env.STAGE }}
+
+      - name: Successful Deployment Comment
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            # Successful Deployment
+            Stage: ${{ env.STAGE }}
+            Url: ${{ env.STAGE }}.api.helpfl.click
 
   e2e:
     name: E2E Test
