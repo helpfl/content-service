@@ -6,8 +6,7 @@ import {Cors, EndpointType, LambdaIntegration, RestApi} from 'aws-cdk-lib/aws-ap
 import {Certificate} from 'aws-cdk-lib/aws-certificatemanager';
 import {ARecord, HostedZone, RecordTarget} from 'aws-cdk-lib/aws-route53';
 import {ApiGateway} from 'aws-cdk-lib/aws-route53-targets';
-import {Table} from 'aws-cdk-lib/aws-dynamodb';
-import {AttributeType} from 'aws-cdk-lib/aws-dynamodb/lib/table';
+import {Table, AttributeType} from 'aws-cdk-lib/aws-dynamodb';
 
 export type ContentServiceStackProps = StackProps & {
     stage: string,
