@@ -1,5 +1,9 @@
+import fetch from 'node-fetch';
+
+const url = `https://${process.env.STAGE}.api.helpfl.click/content`;
+
 test('POST /content', async () => {
-    const response = await fetch(`https://${process.env.STAGE}.api.helpfl.click/content`, {
+    const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(validDummyBody),
         headers: {

@@ -30,7 +30,7 @@ export class ContentRepository implements IContentRepository {
       id
     });
     const params = {
-      TableName: 'Content',
+      TableName: 'ContentTable',
       Item: marshalled
     };
     await this.dynamoDb.putItem(params);
