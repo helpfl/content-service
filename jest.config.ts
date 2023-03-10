@@ -1,12 +1,12 @@
 import type {Config} from 'jest';
 
 const config: Config = {
-  preset: "ts-jest",
+  preset: 'ts-jest',
   transform: {
-    "^.+\\.tsx?$": "ts-jest",
-    "^.+\\.(js)$": "babel-jest",
+    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.(js)$': 'babel-jest',
   },
-  testEnvironment: "node",
+  testEnvironment: 'node',
   clearMocks: true
 };
 

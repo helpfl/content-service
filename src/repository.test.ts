@@ -9,7 +9,7 @@ describe('save', () => {
     await repository.save(content);
 
     expect(dynamo.putItem).toBeCalledWith({
-      TableName: 'Content',
+      TableName: 'ContentTable',
       Item: {
         text: {S: 'Hello World'},
         userId: {S: '4a7ff0c7-fb20-44e5-bba5-f857f270616c'},
