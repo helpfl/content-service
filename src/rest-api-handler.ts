@@ -45,7 +45,7 @@ export class RestApiHandler {
         }
 
         const content = await this.repository.listContent(userID, query);
-        return ok(content);
+        return ok(content.map(c => c.toJson()));
     }
 
 }
