@@ -22,22 +22,22 @@ export class ContentServiceStack extends Stack {
             removalPolicy,
             partitionKey: {
                 name: 'id',
-                type: AttributeType.STRING,
-            },
+                type: AttributeType.STRING
+            }
         });
-        
+
         table.addGlobalSecondaryIndex({
             indexName: 'byUserId',
             partitionKey: {
                 name: 'withUserId',
-                type: AttributeType.STRING,
-            },
+                type: AttributeType.STRING
+            }
         });
 
         const apiFunction = new Function(this, 'RestApiFunction', {
-          runtime: Runtime.NODEJS_16_X,
-          handler: 'rest-api-handler.handler',
-          code: Code.fromAsset(path.join(__dirname, '..', 'build')),
+            runtime: Runtime.NODEJS_16_X,
+            handler: 'rest-api-handler.handler',
+            code: Code.fromAsset(path.join(__dirname, '..', 'build'))
         });
 
         table.grantReadWriteData(apiFunction);
@@ -55,9 +55,9 @@ export class ContentServiceStack extends Stack {
         api.root.addMethod('POST', lambdaIntegration);
 
         const cert = Certificate.fromCertificateArn(
-          this,
-          'cert',
-          'arn:aws:acm:us-east-1:084882962555:certificate/729d47e9-8d3b-439c-b4b5-e74a9a33cbce'
+            this,
+            'cert',
+            'arn:aws:acm:us-east-1:084882962555:certificate/729d47e9-8d3b-439c-b4b5-e74a9a33cbce'
         );
 
         api.addDomainName('DomainName', {
