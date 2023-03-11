@@ -5,6 +5,10 @@ on:
     branches:
       - 'master'
 
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
 
   lint:
@@ -41,12 +45,6 @@ jobs:
     name: Synthesize
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Slug action
-        uses: rlespinasse/github-slug-action@v3.x
-
-      - name: Init STAGE variable
-        run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -59,24 +57,18 @@ jobs:
         with:
           cdk_subcommand: 'synth'
           cdk_args: '--require-approval never'
-          actions_comment: true
+          actions_comment: false
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-west-2'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STAGE: ${{ env.STAGE }}
+          STAGE: 'prod'
 
   diff:
     name: Diff
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Slug action
-        uses: rlespinasse/github-slug-action@v3.x
-
-      - name: Init STAGE variable
-        run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -95,7 +87,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-west-2'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STAGE: ${{ env.STAGE }}
+          STAGE: 'prod'
 
   deploy:
     name: Deploy
@@ -128,11 +120,25 @@ jobs:
           AWS_DEFAULT_REGION: 'us-west-2'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           STAGE: ${{ env.STAGE }}
+
+      - name: Successful Deployment Comment
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            # Success ✅
+            The api was successfully deploy and available at https://${{ env.STAGE }}.api.helpfl.click
+
   e2e:
     name: E2E Test
     runs-on: ubuntu-latest
     needs: [ deploy ]
     steps:
+      - name: Set up Slug action
+        uses: rlespinasse/github-slug-action@v3.x
+
+      - name: Init STAGE variable
+        run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v3
 

@@ -11,6 +11,10 @@ on:
       - 'tsconfig.json'
       - 'rollup.config.js'
 
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
