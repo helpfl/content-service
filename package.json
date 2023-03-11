@@ -25,6 +25,7 @@
         "@types/node": "^18.11.11",
         "@types/node-fetch": "^2.6.2",
         "@types/prettier": "2.6.0",
+        "@types/uuid": "^9.0.1",
         "@typescript-eslint/eslint-plugin": "^5.53.0",
         "@typescript-eslint/parser": "^5.53.0",
         "aws-cdk": "^2.53.0",
@@ -45,9 +46,10 @@
         "@aws-sdk/client-dynamodb": "^3.279.0",
         "@aws-sdk/client-secrets-manager": "^3.279.0",
         "@aws-sdk/util-dynamodb": "^3.279.0",
+        "lz-string": "^1.5.0",
         "node-fetch": "^2.6.9",
         "source-map-support": "^0.5.21",
-        "zod": "^3.21.4",
-        "lz-string": "^1.5.0"
+        "uuid": "^9.0.0",
+        "zod": "^3.21.4"
     }
 }

@@ -9,16 +9,18 @@ export class RestApiHandler {
     constructor(private readonly repository: IContentRepository) {
     }
 
-    invoke = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    readonly invoke = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         switch (event.httpMethod) {
             case 'POST':
                 return this.post(event);
+            case 'GET':
+                return this.get(event);
             default:
                 return notFound();
         }
-    }
+    };
 
-    post = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    async post(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
         if (event.body === null) {
             return badRequest();
         }
@@ -32,7 +34,7 @@ export class RestApiHandler {
         return created();
     };
 
-    get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    async get(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
         const userID = event.headers['x-helpfl-user-id'];
         if (userID === undefined) {
             return badRequest();
@@ -69,7 +71,7 @@ const notFound = (): APIGatewayProxyResult => {
         statusCode: 404,
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({message: 'Not Found'})
-    }
+    };
 };
 
 const badRequest = (): APIGatewayProxyResult => {
@@ -77,16 +79,16 @@ const badRequest = (): APIGatewayProxyResult => {
         statusCode: 400,
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({message: 'Bad Request'})
-    }
-}
+    };
+};
 
 const unprocessableEntity = (message: string): APIGatewayProxyResult => {
     return {
         statusCode: 422,
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({message})
-    }
-}
+    };
+};
 
 const dynamoDbClient = new DynamoDB({});
 const repository = new ContentRepository(dynamoDbClient);

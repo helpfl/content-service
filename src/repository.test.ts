@@ -26,6 +26,12 @@ describe('save', () => {
   });
 });
 
+describe('find', () => {
+  test('returns the content', async () => {
+      // TODO: Implement
+  });
+});
+
 const dynamo = {putItem: jest.fn(), query: jest.fn()};
 
 const repository = new ContentRepository(dynamo);
