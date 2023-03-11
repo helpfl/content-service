@@ -2,6 +2,7 @@ import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda/trigger/ap
 import {Content} from './content';
 import {ContentRepository, IContentRepository} from './repository';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
+import {ContentQuery} from './content-query';
 
 export class RestApiHandler {
 
@@ -31,15 +32,29 @@ export class RestApiHandler {
         return created();
     };
 
+    get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+        const userID = event.headers['x-helpfl-user-id'];
+        if (userID === undefined) {
+            return badRequest();
+        }
+        const query = ContentQuery.parse(event.queryStringParameters || {});
+        if (query instanceof Error) {
+            return unprocessableEntity(query.message);
+        }
+
+        const content = await this.repository.listContent(userID, query);
+        return ok(content);
+    }
+
 }
 
-// const ok = (json: object): APIGatewayProxyResult => {
-//     return {
-//         statusCode: 200,
-//         headers: {'Content-Type': 'application/json'},
-//         body: JSON.stringify(json)
-//     };
-// };
+const ok = (json: object): APIGatewayProxyResult => {
+    return {
+        statusCode: 200,
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(json)
+    };
+};
 
 const created = (): APIGatewayProxyResult => {
     return {

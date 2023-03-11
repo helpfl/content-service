@@ -1,6 +1,6 @@
 import {json} from './zod';
 import zod from 'zod';
-import * as crypto from 'crypto';
+import * as lz from 'lz-string';
 
 export interface IContent {
   getContent(): string;
@@ -27,7 +27,7 @@ export class Content implements IContent {
     date: zod.string().datetime()
   });
 
-  static fromJson(json: string): IContent | ContentParseError {
+  static fromJson(json: string): IContent | Error {
     const result = this.jsonSchema.safeParse(json);
     if (result.success) {
       const {data: {text, userId, date}} = result
@@ -35,6 +35,10 @@ export class Content implements IContent {
     }
     return new ContentParseError(result.error.message);
   }
+
+    static fromProps(text: string, userId: string, date: string): IContent {
+      return new Content(text, userId, date);
+    }
 
   private constructor(
     private readonly text: string,
@@ -65,8 +69,7 @@ export class Content implements IContent {
 
   hash(): string {
     const json = this.toJson();
-    return crypto.createHash('sha256').update(json).digest('hex');
+    return lz.compressToBase64(json);
   }
-
 
 }

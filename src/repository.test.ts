@@ -15,14 +15,18 @@ describe('save', () => {
         userId: {S: '4a7ff0c7-fb20-44e5-bba5-f857f270616c'},
         date: {S: '2020-01-01T00:00:00.000Z'},
         id: {
-          S: '4a7ff0c7-fb20-44e5-bba5-f857f270616c5f59d898f2d75df1cf231adf2410ba57ac80f0335e3a3197b498020c4dd56bef'
+          S: '4a7ff0c7-fb20-44e5-bba5-f857f270616c#N4Ig' +
+              'LgpgHmIFwgBIQDYoPYAIDq6BOKAJiADQgCuAzhHg' +
+              'JLEIAsAhgOwBm7ADAMasC07AEYAmLv0aMIAVn5Ch' +
+              'zWewAc0jiNZcAbAEYtPUiELNI8EGLH8uOqzoAq' +
+              'XLnEfOuAOkdcAWiAC+QA=='
         }
       }
     });
   });
 });
 
-const dynamo = {putItem: jest.fn()};
+const dynamo = {putItem: jest.fn(), query: jest.fn()};
 
 const repository = new ContentRepository(dynamo);
 
