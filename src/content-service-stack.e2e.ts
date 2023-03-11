@@ -31,7 +31,7 @@ test('GET /content', async () => {
         }
     });
 
-    const response = await fetch(url + `?start=2020-01-01T00:00:00.000Z&end=2020-01-01T00:00:00.001Z`, {
+    const response = await fetch(url + '?start=2020-01-01T00:00:00.000Z&end=2020-01-01T00:00:00.001Z', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

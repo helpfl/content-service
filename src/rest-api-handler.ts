@@ -32,7 +32,7 @@ export class RestApiHandler {
 
         await this.repository.save(content);
         return created();
-    };
+    }
 
     async get(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
         const userID = event.headers['x-helpfl-user-id'];
