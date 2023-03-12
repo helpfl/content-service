@@ -2,22 +2,25 @@ import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda/trigger/ap
 import {Content} from './content';
 import {ContentRepository, IContentRepository} from './repository';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
+import {ContentQuery} from './content-query';
 
 export class RestApiHandler {
 
     constructor(private readonly repository: IContentRepository) {
     }
 
-    invoke = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    readonly invoke = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         switch (event.httpMethod) {
             case 'POST':
                 return this.post(event);
+            case 'GET':
+                return this.get(event);
             default:
                 return notFound();
         }
-    }
+    };
 
-    post = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    async post(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
         if (event.body === null) {
             return badRequest();
         }
@@ -29,17 +32,31 @@ export class RestApiHandler {
 
         await this.repository.save(content);
         return created();
-    };
+    }
+
+    async get(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+        const userID = event.headers['x-helpfl-user-id'];
+        if (userID === undefined) {
+            return badRequest();
+        }
+        const query = ContentQuery.parse(event.queryStringParameters || {});
+        if (query instanceof Error) {
+            return unprocessableEntity(query.message);
+        }
+
+        const content = await this.repository.listContent(userID, query);
+        return ok(content.toJson());
+    }
 
 }
 
-// const ok = (json: object): APIGatewayProxyResult => {
-//     return {
-//         statusCode: 200,
-//         headers: {'Content-Type': 'application/json'},
-//         body: JSON.stringify(json)
-//     };
-// };
+const ok = (json: object): APIGatewayProxyResult => {
+    return {
+        statusCode: 200,
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(json)
+    };
+};
 
 const created = (): APIGatewayProxyResult => {
     return {
@@ -54,7 +71,7 @@ const notFound = (): APIGatewayProxyResult => {
         statusCode: 404,
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({message: 'Not Found'})
-    }
+    };
 };
 
 const badRequest = (): APIGatewayProxyResult => {
@@ -62,17 +79,18 @@ const badRequest = (): APIGatewayProxyResult => {
         statusCode: 400,
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({message: 'Bad Request'})
-    }
-}
+    };
+};
 
 const unprocessableEntity = (message: string): APIGatewayProxyResult => {
     return {
         statusCode: 422,
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({message})
-    }
-}
+    };
+};
 
 const dynamoDbClient = new DynamoDB({});
-const repository = new ContentRepository(dynamoDbClient);
+const stage = process.env.STAGE || 'dev';
+const repository = new ContentRepository(dynamoDbClient, stage);
 export const handler = new RestApiHandler(repository).invoke;

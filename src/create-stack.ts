@@ -5,6 +5,6 @@ import {ContentServiceStack} from './content-service-stack';
 const app = new App();
 const stage = process.env.STAGE || 'dev';
 export const stack = new ContentServiceStack(app, `ContentService-${stage}`, {
-    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+    env: {account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION},
     stage
 });
