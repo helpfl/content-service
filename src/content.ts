@@ -10,7 +10,7 @@ export interface IContent {
 
     getDate(): string;
 
-    hash(): string;
+    getId(): string;
 }
 
 export class ContentParseError extends Error {
@@ -70,7 +70,7 @@ export class Content implements IContent, Serializable {
         };
     }
 
-    hash(): string {
+    getId(): string {
         const json = JSON.stringify(this.toJson());
         return lz.compressToBase64(json);
     }

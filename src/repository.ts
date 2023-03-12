@@ -25,7 +25,8 @@ export class ContentRepository implements IContentRepository {
         const marshallStartKey = startKey ? marshall({id: startKey}) : undefined;
         const params = {
             TableName: `ContentTable-${this.stage}`,
-            KeyConditionExpression: 'begins_with(#id,:userId) AND #date BETWEEN :start AND :end',
+            IndexName: 'userId-date-index',
+            KeyConditionExpression: '#userId = :userId AND #date BETWEEN :start AND :end',
             ExclusiveStartKey: marshallStartKey,
             ExpressionAttributeValues: {
                 ':userId': {S: userId},
@@ -33,7 +34,7 @@ export class ContentRepository implements IContentRepository {
                 ':end': {S: contentQuery.getEnd()}
             },
             ExpressionAttributeNames: {
-                '#id': 'id',
+                '#userId': 'userId',
                 '#date': 'date'
             }
         };
@@ -49,23 +50,15 @@ export class ContentRepository implements IContentRepository {
     }
 
     async save(content: IContent): Promise<void> {
-        const item = {
-            text: content.getContent(),
-            userId: content.getUserId(),
-            date: content.getDate()
-        };
-        const marshalled = marshall({
-            ...item,
-            id: this.createId(content.getUserId(), content.hash())
-        });
         const params = {
             TableName: `ContentTable-${this.stage}`,
-            Item: marshalled
+            Item: marshall({
+                text: content.getContent(),
+                userId: content.getUserId(),
+                date: content.getDate(),
+                id: content.getId()
+            })
         };
         await this.dynamoDb.putItem(params);
-    }
-
-    private createId(userId: string, date: string): string {
-        return `${userId}#${date}`;
     }
 }

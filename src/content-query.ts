@@ -17,6 +17,7 @@ export class ContentQueryParseError extends Error {
     }
 }
 
+//TODO: add Page Limit
 export class ContentQuery implements IContentQuery {
 
     static parse(queryParams: unknown): IContentQuery | Error {

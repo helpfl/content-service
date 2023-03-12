@@ -23,6 +23,13 @@ export class ContentServiceStack extends Stack {
             partitionKey: {
                 name: 'id',
                 type: AttributeType.STRING
+            }
+        });
+        table.addGlobalSecondaryIndex({
+            indexName: 'userId-date-index',
+            partitionKey: {
+                name: 'userId',
+                type: AttributeType.STRING
             },
             sortKey: {
                 name: 'date',
