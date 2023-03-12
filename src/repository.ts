@@ -24,7 +24,7 @@ export class ContentRepository implements IContentRepository {
         const startKey = pageNextToken && lz.decompressFromBase64(pageNextToken);
         const marshallStartKey = startKey ? marshall({id: startKey}) : undefined;
         const params = {
-            TableName: 'ContentTable',
+            TableName: `ContentTable-${this.stage}`,
             KeyConditionExpression: 'begins_with(#id,:userId) AND #date BETWEEN :start AND :end',
             ExclusiveStartKey: marshallStartKey,
             ExpressionAttributeValues: {
