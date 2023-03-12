@@ -1,11 +1,8 @@
-export type IPaginatedList<T> = {
-    map<U>(mapper: (item: T) => U): IPaginatedList<U>;
-    toJson(): string;
-}
+import {Serializable} from './serializable';
 
-export class PaginatedList<T> implements IPaginatedList<T> {
+export class PaginatedList<T extends Serializable> implements Serializable {
 
-    static fromArray<T>(array: T[], pageNextToken?: string): PaginatedList<T> {
+    static fromArray<T extends Serializable>(array: T[], pageNextToken?: string): Serializable {
         return new PaginatedList(array, pageNextToken);
     }
 
@@ -15,15 +12,11 @@ export class PaginatedList<T> implements IPaginatedList<T> {
     ) {
     }
 
-    map<U>(mapper: (item: T) => U): PaginatedList<U> {
-        return new PaginatedList(this.items.map(mapper), this.pageNextToken);
-    }
-
-    toJson(): string {
-        return JSON.stringify({
-            items: this.items,
-            pageNextToken: this.pageNextToken,
-            total: this.items.length
-        });
+    toJson(): object {
+        return {
+            total: this.items.length,
+            items: this.items.map(item => item.toJson()),
+            pageNextToken: this.pageNextToken
+        };
     }
 }

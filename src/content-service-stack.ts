@@ -18,7 +18,7 @@ export class ContentServiceStack extends Stack {
         const {stage} = props;
         const removalPolicy = stage === 'prod' ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY;
         const table = new Table(this, 'ContentTable', {
-            tableName: 'ContentTable',
+            tableName: `ContentTable-${stage}`,
             removalPolicy,
             partitionKey: {
                 name: 'id',

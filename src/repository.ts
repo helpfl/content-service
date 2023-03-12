@@ -4,18 +4,22 @@ import {DynamoDB} from '@aws-sdk/client-dynamodb';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {IContentQuery} from './content-query';
 import * as lz from 'lz-string';
+import {Serializable} from './serializable';
 
 export interface IContentRepository {
     save(content: IContent): Promise<void>;
-    listContent(userId: string, contentQuery: IContentQuery): Promise<PaginatedList<IContent>>;
+    listContent(userId: string, contentQuery: IContentQuery): Promise<Serializable>;
 }
 
 export class ContentRepository implements IContentRepository {
 
-    constructor(private readonly dynamoDb: Pick<DynamoDB, 'putItem' | 'query'>) {
+    constructor(
+        private readonly dynamoDb: Pick<DynamoDB, 'putItem' | 'query'>,
+        private readonly stage: string,
+    ) {
     }
 
-    async listContent(userId: string, contentQuery: IContentQuery): Promise<PaginatedList<IContent>> {
+    async listContent(userId: string, contentQuery: IContentQuery): Promise<Serializable> {
         const pageNextToken = contentQuery.getPageNextToken();
         const startKey = pageNextToken && lz.decompressFromBase64(pageNextToken);
         const marshallStartKey = startKey ? marshall({id: startKey}) : undefined;
@@ -55,7 +59,7 @@ export class ContentRepository implements IContentRepository {
             id: this.createId(content.getUserId(), content.hash())
         });
         const params = {
-            TableName: 'ContentTable',
+            TableName: `ContentTable-${this.stage}`,
             Item: marshalled
         };
         await this.dynamoDb.putItem(params);

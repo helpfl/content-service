@@ -2,7 +2,9 @@ import Zod from 'zod';
 
 export interface IContentQuery {
     getStart(): string;
+
     getEnd(): string;
+
     getPageNextToken(): string | undefined;
 }
 

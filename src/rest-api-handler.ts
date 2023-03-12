@@ -45,7 +45,7 @@ export class RestApiHandler {
         }
 
         const content = await this.repository.listContent(userID, query);
-        return ok(content.map(c => c.toJson()));
+        return ok(content.toJson());
     }
 
 }
@@ -91,5 +91,6 @@ const unprocessableEntity = (message: string): APIGatewayProxyResult => {
 };
 
 const dynamoDbClient = new DynamoDB({});
-const repository = new ContentRepository(dynamoDbClient);
+const stage = process.env.STAGE || 'dev';
+const repository = new ContentRepository(dynamoDbClient, stage);
 export const handler = new RestApiHandler(repository).invoke;

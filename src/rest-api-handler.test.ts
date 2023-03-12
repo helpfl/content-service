@@ -1,6 +1,7 @@
 import {RestApiHandler} from './rest-api-handler';
 import {APIGatewayProxyEvent} from 'aws-lambda/trigger/api-gateway-proxy';
 import {Content} from './content';
+import {PaginatedList} from './pagination';
 
 
 describe('returns not found if the method is not POST', () => {
@@ -40,9 +41,8 @@ describe('GET', () => {
     [
         {
             name: 'returns 200 OK',
-            page: {
-                total: 3,
-                items: [
+            page: PaginatedList.fromArray(
+                [
                     Content.fromProps(
                         'Hello World',
                         '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
@@ -59,7 +59,7 @@ describe('GET', () => {
                         '2020-01-01T00:00:00.000Z'
                     )
                 ]
-            },
+            ),
             event: validContentGetRequest({
                 start: '2020-01-01T00:00:00.000Z',
                 end: '2020-01-01T00:00:00.000Z'
@@ -90,10 +90,7 @@ describe('GET', () => {
         },
         {
             name: 'handles empty page',
-            page: {
-                total: 0,
-                items: []
-            },
+            page: PaginatedList.fromArray([]),
             event: validContentGetRequest({
                 start: '2020-01-01T00:00:00.000Z',
                 end: '2020-01-01T00:00:00.000Z'
@@ -108,17 +105,16 @@ describe('GET', () => {
         },
         {
             name: 'handles page next tokens',
-            page: {
-                total: 1,
-                items: [
+            page: PaginatedList.fromArray(
+                [
                     Content.fromProps(
                         'Hello World',
                         '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
                         '2020-01-01T00:00:00.000Z'
                     )
                 ],
-                pageNextToken: 'bar'
-            },
+                'bar'
+            ),
             event: validContentGetRequest({
                 start: '2020-01-01T00:00:00.000Z',
                 end: '2020-01-01T00:00:00.000Z',
