@@ -41,7 +41,7 @@ test('GET /content', async () => {
 
     expect(response.status).toEqual(200);
     const data = await response.json();
-    expect(data.items).toContain(item);
+    expect(data.items).toEqual([item]);
 });
 
 const validDummyBody = {
