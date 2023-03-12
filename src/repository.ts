@@ -25,7 +25,7 @@ export class ContentRepository implements IContentRepository {
         const marshallStartKey = startKey ? marshall({id: startKey}) : undefined;
         const params = {
             TableName: 'ContentTable',
-            KeyConditionExpression: '#id contains :userId AND #date BETWEEN :start AND :end',
+            KeyConditionExpression: 'begins_with(#id,:userId) AND #date BETWEEN :start AND :end',
             ExclusiveStartKey: marshallStartKey,
             ExpressionAttributeValues: {
                 ':userId': {S: userId},
