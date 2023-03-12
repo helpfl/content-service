@@ -33,7 +33,10 @@ export class ContentServiceStack extends Stack {
         const apiFunction = new Function(this, 'RestApiFunction', {
             runtime: Runtime.NODEJS_16_X,
             handler: 'rest-api-handler.handler',
-            code: Code.fromAsset(path.join(__dirname, '..', 'build'))
+            code: Code.fromAsset(path.join(__dirname, '..', 'build')),
+            environment: {
+                STAGE: stage,
+            }
         });
 
         table.grantReadWriteData(apiFunction);
