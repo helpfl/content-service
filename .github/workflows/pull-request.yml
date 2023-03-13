@@ -39,7 +39,12 @@ jobs:
 
             -   name: Test
                 run: |
-                    npm test
+                    npm test -- --coverage
+
+            -   name: Coverage Report
+                uses: artiomtr/jest-coverage-report-action@v2
+                with:
+                    github-token: ${{ secrets.GITHUB_TOKEN }}
 
     synth:
         name: Synthesize
