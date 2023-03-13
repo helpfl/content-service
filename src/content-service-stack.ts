@@ -18,18 +18,21 @@ export class ContentServiceStack extends Stack {
         const {stage} = props;
         const removalPolicy = stage === 'prod' ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY;
         const table = new Table(this, 'ContentTable', {
-            tableName: 'ContentTable',
+            tableName: `ContentTable-${stage}`,
             removalPolicy,
             partitionKey: {
                 name: 'id',
                 type: AttributeType.STRING
             }
         });
-
         table.addGlobalSecondaryIndex({
-            indexName: 'byUserId',
+            indexName: 'userId-date-index',
             partitionKey: {
-                name: 'withUserId',
+                name: 'userId',
+                type: AttributeType.STRING
+            },
+            sortKey: {
+                name: 'date',
                 type: AttributeType.STRING
             }
         });
@@ -37,7 +40,10 @@ export class ContentServiceStack extends Stack {
         const apiFunction = new Function(this, 'RestApiFunction', {
             runtime: Runtime.NODEJS_16_X,
             handler: 'rest-api-handler.handler',
-            code: Code.fromAsset(path.join(__dirname, '..', 'build'))
+            code: Code.fromAsset(path.join(__dirname, '..', 'build')),
+            environment: {
+                STAGE: stage,
+            }
         });
 
         table.grantReadWriteData(apiFunction);

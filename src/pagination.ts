@@ -1,13 +1,22 @@
-export type PaginatedList<T> = {
-    items: T[];
-    pageNextToken?: string;
-    total: number;
-}
+import {Serializable} from './serializable';
 
-export function mapPaginatedList<T, U>(list: PaginatedList<T>, mapper: (item: T) => U): PaginatedList<U> {
-    return {
-        items: list.items.map(mapper),
-        pageNextToken: list.pageNextToken,
-        total: list.total
+export class PaginatedList<T extends Serializable> implements Serializable {
+
+    static fromArray<T extends Serializable>(array: T[], pageNextToken?: string): Serializable {
+        return new PaginatedList(array, pageNextToken);
+    }
+
+    private constructor(
+        private readonly items: T[],
+        private readonly pageNextToken?: string
+    ) {
+    }
+
+    toJson(): object {
+        return {
+            total: this.items.length,
+            items: this.items.map(item => item.toJson()),
+            pageNextToken: this.pageNextToken
+        };
     }
 }

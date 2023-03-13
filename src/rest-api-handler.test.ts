@@ -1,5 +1,7 @@
 import {RestApiHandler} from './rest-api-handler';
 import {APIGatewayProxyEvent} from 'aws-lambda/trigger/api-gateway-proxy';
+import {Content} from './content';
+import {PaginatedList} from './pagination';
 
 
 describe('returns not found if the method is not POST', () => {
@@ -14,7 +16,7 @@ describe('returns not found if the method is not POST', () => {
 });
 
 describe('POST', () => {
-    test('returns 200 OK', async () => {
+    test('returns 201 OK', async () => {
         repository.save.mockResolvedValue(undefined);
         const event = validContentPostRequest();
 
@@ -33,6 +35,117 @@ describe('POST', () => {
     });
 });
 
+describe('GET', () => {
+
+
+    [
+        {
+            name: 'returns 200 OK',
+            page: PaginatedList.fromArray(
+                [
+                    Content.fromProps(
+                        'Hello World',
+                        '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
+                        '2020-01-01T00:00:00.000Z'
+                    ),
+                    Content.fromProps(
+                        'blah blah',
+                        '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
+                        '2020-01-01T00:00:00.000Z'
+                    ),
+                    Content.fromProps(
+                        'FOO BAR',
+                        '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
+                        '2020-01-01T00:00:00.000Z'
+                    )
+                ]
+            ),
+            event: validContentGetRequest({
+                start: '2020-01-01T00:00:00.000Z',
+                end: '2020-01-01T00:00:00.000Z'
+            }),
+            expected: expect.objectContaining({
+                statusCode: 200,
+                body: JSON.stringify({
+                    total: 3,
+                    items: [
+                        {
+                            text: 'Hello World',
+                            userId: '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
+                            date: '2020-01-01T00:00:00.000Z'
+                        },
+                        {
+                            text: 'blah blah',
+                            userId: '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
+                            date: '2020-01-01T00:00:00.000Z'
+                        },
+                        {
+                            text: 'FOO BAR',
+                            userId: '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
+                            date: '2020-01-01T00:00:00.000Z'
+                        }
+                    ]
+                })
+            })
+        },
+        {
+            name: 'handles empty page',
+            page: PaginatedList.fromArray([]),
+            event: validContentGetRequest({
+                start: '2020-01-01T00:00:00.000Z',
+                end: '2020-01-01T00:00:00.000Z'
+            }),
+            expected: expect.objectContaining({
+                statusCode: 200,
+                body: JSON.stringify({
+                    total: 0,
+                    items: []
+                })
+            })
+        },
+        {
+            name: 'handles page next tokens',
+            page: PaginatedList.fromArray(
+                [
+                    Content.fromProps(
+                        'Hello World',
+                        '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
+                        '2020-01-01T00:00:00.000Z'
+                    )
+                ],
+                'bar'
+            ),
+            event: validContentGetRequest({
+                start: '2020-01-01T00:00:00.000Z',
+                end: '2020-01-01T00:00:00.000Z',
+                pageNextToken: 'foo'
+            }),
+            expected: expect.objectContaining({
+                statusCode: 200,
+                body: JSON.stringify({
+                    total: 1,
+                    items: [
+                        {
+                            text: 'Hello World',
+                            userId: '4a7ff0c7-fb20-44e5-bba5-f857f270616c',
+                            date: '2020-01-01T00:00:00.000Z'
+                        }
+                    ],
+                    pageNextToken: 'bar'
+                })
+            })
+        },
+    ].forEach(({page, event, name, expected}) => {
+        test(name, async () => {
+            repository.listContent.mockResolvedValue(page);
+
+            const response = await handler.invoke(event);
+
+            expect(response).toEqual(expected);
+        });
+    });
+});
+
 const repository = {
     save: jest.fn(),
     listContent: jest.fn()
@@ -48,6 +161,17 @@ function validContentPostRequest(body: unknown = validDummyBody): APIGatewayProx
         pathParameters: null,
         queryStringParameters: null
     } as APIGatewayProxyEvent;
+}
+
+function validContentGetRequest(queryParams: Record<string, string>): APIGatewayProxyEvent {
+    return {
+        httpMethod: 'GET',
+        headers: {
+            'x-helpfl-user-id': '4a7ff0c7-fb20-44e5-bba5-f857f270616c'
+        },
+        pathParameters: null,
+        queryStringParameters: queryParams
+    } as unknown as APIGatewayProxyEvent;
 }
 
 function putRequest() {
