@@ -10,6 +10,7 @@ on:
       - 'package-lock.json'
       - 'tsconfig.json'
       - 'rollup.config.js'
+      - '.github/workflows/**'
 
 concurrency:
   group: ${{ github.ref }}
